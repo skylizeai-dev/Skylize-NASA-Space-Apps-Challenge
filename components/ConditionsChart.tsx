@@ -37,7 +37,7 @@ const FILL: Record<CoverageStatus, string> = {
 };
 
 // Merge same-status neighbours in a row into one rect.
-function runs(cells: CoverageCell[]) {
+export function runs(cells: CoverageCell[]) {
   const out: { o: number; p: number; width: number; status: CoverageStatus }[] = [];
   for (const cell of cells) {
     const last = out[out.length - 1];
@@ -112,7 +112,7 @@ export default function ConditionsChart({ atmosphere, findings, cells, onSelect 
       className="flex flex-col gap-3 rounded-lg border border-line bg-surface p-4"
     >
       <div className="flex flex-col gap-1">
-        <h2 className="text-base font-semibold">Where the tests are</h2>
+        <h3 className="text-base font-semibold">Where the tests are</h3>
         <p className="text-xs text-ink-2">
           Each mark is one finding at its tested oxygen and pressure. Hatching means little or
           no evidence. Select a mark to open its card. Marks that would overlap are

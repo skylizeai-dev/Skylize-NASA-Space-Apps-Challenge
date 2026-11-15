@@ -10,6 +10,14 @@ export interface ViewState {
   fuel: FuelGroup | "any";
 }
 
+export type Panel = "overview" | "coverage" | "evidence" | "implications";
+export const PANELS: Panel[] = ["overview", "coverage", "evidence", "implications"];
+
+export function parsePanel(params: URLSearchParams): Panel {
+  const raw = params.get("view") ?? "";
+  return (PANELS as string[]).includes(raw) ? (raw as Panel) : "overview";
+}
+
 const DIRECTIONS = ["opposed", "concurrent", "quiescent", "unknown"];
 const FUELS = ["plastic", "fabric", "liquid", "gas", "other"];
 
@@ -44,13 +52,14 @@ export function parseView(params: URLSearchParams, fallback: Atmosphere): ViewSt
   };
 }
 
-export function serializeView(view: ViewState): string {
+export function serializeView(view: ViewState, panel: Panel = "overview"): string {
   const params = new URLSearchParams();
   params.set("o2", String(view.atmosphere.oxygen_pct));
   params.set("p", String(view.atmosphere.pressure_kpa));
   params.set("flow", String(view.atmosphere.flow_cm_s));
   if (view.expert) params.set("mode", "expert");
   if (view.expert && view.direction !== "any") params.set("dir", view.direction);
-  if (view.expert && view.fuel !== "any") params.set("fuel", view.fuel);
+  if (view.fuel !== "any") params.set("fuel", view.fuel);
+  if (panel !== "overview") params.set("view", panel);
   return params.toString();
 }

@@ -2,13 +2,7 @@
 
 import { useState } from "react";
 import { DOMAIN } from "@/lib/coverage";
-import {
-  FLOW_LABEL,
-  FUEL_GROUP_LABEL,
-  KPA_TO_PSI,
-  fmtNum,
-  type FuelGroup,
-} from "@/lib/format";
+import { FLOW_LABEL, KPA_TO_PSI, fmtNum } from "@/lib/format";
 import { clamp, type ViewState } from "@/lib/url";
 import type { Atmosphere, FlowDirection, Preset } from "@/lib/schema";
 
@@ -21,7 +15,6 @@ interface Props {
 }
 
 const DIRECTIONS: FlowDirection[] = ["opposed", "concurrent", "quiescent", "unknown"];
-const FUELS = Object.keys(FUEL_GROUP_LABEL) as FuelGroup[];
 
 export default function AtmosphereSelector({
   presets,
@@ -134,14 +127,6 @@ export default function AtmosphereSelector({
             options={DIRECTIONS.map((d) => [d, FLOW_LABEL[d]])}
             onChange={(direction) =>
               onFilters({ direction: direction as FlowDirection | "any", fuel: view.fuel })
-            }
-          />
-          <Select
-            label="Fuel type"
-            value={view.fuel}
-            options={FUELS.map((f) => [f, FUEL_GROUP_LABEL[f]])}
-            onChange={(fuel) =>
-              onFilters({ direction: view.direction, fuel: fuel as FuelGroup | "any" })
             }
           />
         </div>

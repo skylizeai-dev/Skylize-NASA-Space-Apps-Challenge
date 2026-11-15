@@ -13,14 +13,18 @@ interface Props {
   onCite: (id: string) => void;
 }
 
-// AI-written text always carries the same signal: violet left border plus label.
-export default function Implications({ items, top, onCite }: Props) {
-  // Guardrail: a bullet survives only if every id it cites is in the ranked evidence on screen.
+// Guardrail: an implication survives only if every id it cites is in the top-ranked evidence.
+export function validImplications(items: Implication[] | undefined, top: ScoredFinding[]) {
   const topIds = new Set(top.map((f) => f.id));
   const valid = (items ?? []).filter(
     (item) => item.ids.length > 0 && item.ids.every((id) => topIds.has(id))
   );
-  const cited = new Set(valid.flatMap((item) => item.ids));
+  return { valid, cited: new Set(valid.flatMap((item) => item.ids)) };
+}
+
+// AI-written text always carries the same signal: violet left border plus label.
+export default function Implications({ items, top, onCite }: Props) {
+  const { valid, cited } = validImplications(items, top);
 
   return (
     <section
@@ -28,7 +32,7 @@ export default function Implications({ items, top, onCite }: Props) {
       className="flex flex-col gap-3 rounded-lg border border-l-2 border-line border-l-ai bg-surface p-4"
     >
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h2 className="text-base font-semibold">Safety implications</h2>
+        <h3 className="text-base font-semibold">What the top-ranked evidence implies</h3>
         {cited.size >= 3 && (
           <p className="text-xs text-ai">
             AI-generated from NASA PSI records. Based on {cited.size} source-checked findings.

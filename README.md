@@ -64,7 +64,7 @@ publishing. In the running app:
   page.tsx            dashboard (Suspense + skeleton)
   method/page.tsx     ranking formula, worked example, coverage rule, data list, limits
   api/ask/route.ts    Q&A endpoint
-/components           Dashboard, TopBar, AtmosphereSelector, AnswerStrip, Implications,
+/components           Dashboard, Overview, TopBar, AtmosphereSelector, AnswerStrip, Implications,
                       EvidenceCard, EvidenceTable, VerifyDrawer, ConditionsChart,
                       GapsPanel, AskBox
 /data                 investigations.json, findings.json, presets.json, implications.json
@@ -79,8 +79,13 @@ test conditions lie within +/-5 % O2 and +/-15 kPa of it, **thin** with 1 or 2,
 same rule drives the verdict, the chart hatching and the gaps panel
 (`lib/coverage.ts`).
 
-The view state (atmosphere, mode, filters) lives in the URL, e.g.
-`?o2=34&p=56.5&flow=15`, so any view can be shared.
+## Overview and detail views
+
+The dashboard opens on an overview: one tile per output category (Coverage,
+Evidence, Safety implications, Method and data), each stating its answer.
+A tile opens its detail view. The view state (atmosphere, open view, mode,
+filters) lives in the URL, e.g. `?o2=34&p=56.5&flow=15&view=evidence`, so any
+view can be shared and the browser Back button returns to the overview.
 
 ## Running locally
 

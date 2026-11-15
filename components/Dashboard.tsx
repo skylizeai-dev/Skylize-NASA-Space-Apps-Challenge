@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { MotionConfig, motion } from "motion/react";
-import AnswerStrip from "./AnswerStrip";
+import { CoverageVerdict, OutcomeSummary } from "./AnswerStrip";
 import AskBox from "./AskBox";
 import AtmosphereSelector from "./AtmosphereSelector";
 import ConditionsChart from "./ConditionsChart";
@@ -11,12 +11,20 @@ import EvidenceCard from "./EvidenceCard";
 import EvidenceTable, { downloadCsv } from "./EvidenceTable";
 import GapsPanel from "./GapsPanel";
 import Implications, { type Implication } from "./Implications";
+import Overview from "./Overview";
 import TopBar from "./TopBar";
 import VerifyDrawer from "./VerifyDrawer";
 import { buildCoverageGrid, coverageAt, nearestTested } from "@/lib/coverage";
-import { fuelGroup } from "@/lib/format";
+import { FUEL_GROUP_LABEL, fuelGroup, type FuelGroup } from "@/lib/format";
 import { rankFindings } from "@/lib/rank";
-import { parseView, serializeView, type ViewState } from "@/lib/url";
+import {
+  PANELS,
+  parsePanel,
+  parseView,
+  serializeView,
+  type Panel,
+  type ViewState,
+} from "@/lib/url";
 import type { Atmosphere, Finding, Investigation, Preset } from "@/lib/schema";
 
 import findingsData from "@/data/findings.json";
@@ -34,28 +42,48 @@ const cells = buildCoverageGrid(findings);
 
 const TOP_N = 8;
 const ASK_ENABLED = process.env.NEXT_PUBLIC_ASK_ENABLED === "1";
+const FUELS = Object.keys(FUEL_GROUP_LABEL) as FuelGroup[];
+
+const PANEL_LABEL: Record<Panel, string> = {
+  overview: "Overview",
+  coverage: "Coverage",
+  evidence: "Evidence",
+  implications: "Safety implications",
+};
 
 export default function Dashboard() {
   const searchParams = useSearchParams();
+  // The open panel is read straight from the URL, so the browser Back button
+  // returns from a detail view to the overview.
+  const panel = parsePanel(new URLSearchParams(searchParams.toString()));
   const [view, setView] = useState<ViewState>(() =>
     parseView(new URLSearchParams(searchParams.toString()), presets[0])
   );
   const [showAll, setShowAll] = useState(false);
   const [layout, setLayout] = useState<"cards" | "table">("cards");
   const [verifyId, setVerifyId] = useState<string | null>(null);
-  const [highlightId, setHighlightId] = useState<string | null>(null);
+  const [revealId, setRevealId] = useState<string | null>(null);
 
   // Mirror state into the URL. Debounced, because browsers throttle history writes.
   useEffect(() => {
     const timer = setTimeout(() => {
       try {
-        window.history.replaceState(null, "", `?${serializeView(view)}`);
+        const current = parsePanel(new URLSearchParams(window.location.search));
+        window.history.replaceState(null, "", `?${serializeView(view, current)}`);
       } catch {
         // The view still works; only the shareable link lags behind.
       }
     }, 200);
     return () => clearTimeout(timer);
-  }, [view]);
+  }, [view, panel]);
+
+  const open = useCallback(
+    (next: Panel) => {
+      window.history.pushState(null, "", `?${serializeView(view, next)}`);
+      window.scrollTo({ top: 0 });
+    },
+    [view]
+  );
 
   const { atmosphere } = view;
   const setAtmosphere = useCallback(
@@ -78,19 +106,23 @@ export default function Dashboard() {
     [atmosphere.oxygen_pct, atmosphere.pressure_kpa]
   );
 
+  const fuelCounts = useMemo(() => {
+    const counts = new Map<FuelGroup, number>();
+    for (const f of ranked) counts.set(fuelGroup(f), (counts.get(fuelGroup(f)) ?? 0) + 1);
+    return counts;
+  }, [ranked]);
   const filtered = useMemo(
     () =>
       ranked.filter(
         (f) =>
-          !view.expert ||
-          ((view.direction === "any" || f.flow_direction === view.direction) &&
-            (view.fuel === "any" || fuelGroup(f) === view.fuel))
+          (view.fuel === "any" || fuelGroup(f) === view.fuel) &&
+          (!view.expert || view.direction === "any" || f.flow_direction === view.direction)
       ),
     [ranked, view.expert, view.direction, view.fuel]
   );
   const top = ranked.slice(0, TOP_N);
   const visible = showAll ? filtered : filtered.slice(0, TOP_N);
-  const filtersOn = view.expert && (view.direction !== "any" || view.fuel !== "any");
+  const filtersOn = view.fuel !== "any" || (view.expert && view.direction !== "any");
 
   const activePreset =
     presets.find(
@@ -100,21 +132,33 @@ export default function Dashboard() {
         p.flow_cm_s === atmosphere.flow_cm_s
     )?.id ?? "custom";
 
-  // From a chart mark or a citation chip: reveal the card, scroll to it, flash it.
-  const reveal = useCallback((id: string) => {
-    setLayout("cards");
-    setShowAll(true);
-    setHighlightId(id);
-    requestAnimationFrame(() =>
-      requestAnimationFrame(() => {
-        const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        document
-          .getElementById(`finding-${id}`)
-          ?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
-      })
-    );
-    setTimeout(() => setHighlightId((current) => (current === id ? null : current)), 2000);
-  }, []);
+  // From a chart mark or a citation chip: open the evidence view with that card
+  // unfiltered, then scroll to it and flash it once it is on screen.
+  const reveal = useCallback(
+    (id: string) => {
+      const next = { ...view, direction: "any" as const, fuel: "any" as const };
+      setView(next);
+      setLayout("cards");
+      setShowAll(true);
+      setRevealId(id);
+      window.history.pushState(null, "", `?${serializeView(next, "evidence")}`);
+    },
+    [view]
+  );
+  useEffect(() => {
+    if (!revealId || panel !== "evidence") return;
+    const frame = requestAnimationFrame(() => {
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      document
+        .getElementById(`finding-${revealId}`)
+        ?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
+    });
+    const timer = setTimeout(() => setRevealId(null), 2200);
+    return () => {
+      cancelAnimationFrame(frame);
+      clearTimeout(timer);
+    };
+  }, [revealId, panel]);
 
   const verifyFinding = ranked.find((f) => f.id === verifyId) ?? null;
 
@@ -122,7 +166,7 @@ export default function Dashboard() {
     <MotionConfig reducedMotion="user">
       <TopBar expert={view.expert} onExpert={(expert) => setView((v) => ({ ...v, expert }))} />
 
-      <main className="mx-auto grid w-full max-w-[1440px] flex-1 grid-cols-1 gap-6 px-4 py-6 md:grid-cols-[300px_minmax(0,1fr)] xl:grid-cols-[320px_minmax(0,1fr)_360px]">
+      <main className="mx-auto grid w-full max-w-[1440px] flex-1 grid-cols-1 gap-6 px-4 py-6 md:grid-cols-[300px_minmax(0,1fr)] xl:grid-cols-[320px_minmax(0,1fr)]">
         <div className="md:sticky md:top-[68px] md:self-start">
           <AtmosphereSelector
             presets={presets}
@@ -133,113 +177,180 @@ export default function Dashboard() {
           />
         </div>
 
-        <div className="flex min-w-0 flex-col gap-6">
-          <h1 className="max-w-[60ch] text-xl leading-snug font-semibold">
+        <div className="flex min-w-0 flex-col gap-4">
+          <h1 className="text-xl leading-snug font-semibold">
             What does NASA&apos;s microgravity fire evidence say about this atmosphere?
           </h1>
 
-          <AnswerStrip
-            atmosphere={atmosphere}
-            coverage={coverage}
-            top={top}
-            nearest={nearest}
-            onJump={jump}
-          />
+          <nav aria-label="Outputs" className="flex flex-wrap gap-1 border-b border-line">
+            {PANELS.map((option) => (
+              <button
+                key={option}
+                type="button"
+                aria-current={panel === option ? "page" : undefined}
+                onClick={() => open(option)}
+                className={`-mb-px border-b-2 px-3 py-2 text-sm font-semibold ${
+                  panel === option
+                    ? "border-accent text-accent"
+                    : "border-transparent text-ink-2 hover:text-ink"
+                }`}
+              >
+                {PANEL_LABEL[option]}
+              </button>
+            ))}
+          </nav>
 
-          <Implications items={implications[activePreset]} top={top} onCite={reveal} />
+          {panel === "overview" && (
+            <Overview
+              atmosphere={atmosphere}
+              coverage={coverage}
+              cells={cells}
+              ranked={ranked}
+              top={top}
+              implications={implications[activePreset]}
+              investigationCount={investigations.length}
+              onOpen={open}
+            />
+          )}
 
-          <section aria-label="Ranked evidence" className="flex flex-col gap-3">
-            <div className="flex flex-wrap items-end justify-between gap-2">
-              <div className="flex flex-col">
-                <h2 className="text-base font-semibold">Ranked evidence</h2>
-                <p className="text-xs text-ink-2">
-                  {filtered.length} of {ranked.length} source-checked findings, closest test
-                  conditions first.{" "}
-                  {filtersOn && (
+          {panel === "coverage" && (
+            <div className="flex flex-col gap-4">
+              <CoverageVerdict
+                atmosphere={atmosphere}
+                coverage={coverage}
+                nearest={nearest}
+                onJump={jump}
+              />
+              <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-[minmax(0,560px)_minmax(0,1fr)]">
+                <ConditionsChart
+                  atmosphere={atmosphere}
+                  findings={ranked}
+                  cells={cells}
+                  onSelect={reveal}
+                />
+                <GapsPanel coverage={coverage} cells={cells} nearest={nearest} onJump={jump} />
+              </div>
+            </div>
+          )}
+
+          {panel === "implications" && (
+            <Implications items={implications[activePreset]} top={top} onCite={reveal} />
+          )}
+
+          {panel === "evidence" && (
+            <section aria-label="Ranked evidence" className="flex flex-col gap-4">
+              <div className="rounded-lg border border-line bg-surface p-4">
+                <OutcomeSummary top={top} />
+              </div>
+
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div role="group" aria-label="Fuel type" className="flex flex-wrap gap-1.5">
+                  <FuelChip
+                    label="All fuels"
+                    count={ranked.length}
+                    active={view.fuel === "any"}
+                    onClick={() => setView((v) => ({ ...v, fuel: "any" }))}
+                  />
+                  {FUELS.filter((fuel) => fuelCounts.has(fuel)).map((fuel) => (
+                    <FuelChip
+                      key={fuel}
+                      label={FUEL_GROUP_LABEL[fuel]}
+                      count={fuelCounts.get(fuel) ?? 0}
+                      active={view.fuel === fuel}
+                      onClick={() => setView((v) => ({ ...v, fuel }))}
+                    />
+                  ))}
+                </div>
+                {view.expert && (
+                  <div className="flex items-center gap-3 text-xs">
+                    <div
+                      role="group"
+                      aria-label="Evidence layout"
+                      className="flex rounded-md border border-line p-0.5"
+                    >
+                      {(["cards", "table"] as const).map((option) => (
+                        <button
+                          key={option}
+                          type="button"
+                          aria-pressed={layout === option}
+                          onClick={() => setLayout(option)}
+                          className={`rounded px-2.5 py-1 font-semibold capitalize ${
+                            layout === option
+                              ? "bg-surface-2 text-accent"
+                              : "text-ink-2 hover:text-ink"
+                          }`}
+                        >
+                          {option}
+                        </button>
+                      ))}
+                    </div>
                     <button
                       type="button"
-                      onClick={() => setView((v) => ({ ...v, direction: "any", fuel: "any" }))}
-                      className="text-accent underline underline-offset-2"
+                      onClick={() => downloadCsv(filtered)}
+                      className="text-accent hover:underline"
                     >
-                      Clear filters
+                      Download CSV
                     </button>
-                  )}
-                </p>
-              </div>
-              {view.expert && (
-                <div className="flex items-center gap-3 text-xs">
-                  <div role="group" aria-label="Evidence layout" className="flex rounded-md border border-line p-0.5">
-                    {(["cards", "table"] as const).map((option) => (
-                      <button
-                        key={option}
-                        type="button"
-                        aria-pressed={layout === option}
-                        onClick={() => setLayout(option)}
-                        className={`rounded px-2.5 py-1 font-semibold capitalize ${
-                          layout === option ? "bg-surface-2 text-accent" : "text-ink-2 hover:text-ink"
-                        }`}
-                      >
-                        {option}
-                      </button>
-                    ))}
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => downloadCsv(filtered)}
-                    className="text-accent hover:underline"
-                  >
-                    Download CSV
-                  </button>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
 
-            {filtered.length === 0 ? (
-              <p className="hatch rounded-lg border border-line p-6 text-sm">
-                No findings match these filters. Clear the filters to see all {ranked.length}{" "}
-                findings.
-              </p>
-            ) : view.expert && layout === "table" ? (
-              <EvidenceTable findings={filtered} onVerify={setVerifyId} />
-            ) : (
-              <>
-                <ol className="flex flex-col gap-3">
-                  {visible.map((finding, index) => (
-                    <motion.li
-                      key={finding.id}
-                      layout="position"
-                      transition={{ duration: 0.2, ease: "easeOut" }}
-                    >
-                      <EvidenceCard
-                        rank={index + 1}
-                        finding={finding}
-                        investigation={investigationById.get(finding.investigation_id)}
-                        atmosphere={atmosphere}
-                        highlighted={highlightId === finding.id}
-                        onVerify={setVerifyId}
-                      />
-                    </motion.li>
-                  ))}
-                </ol>
-                {filtered.length > TOP_N && (
+              <p className="text-xs text-ink-2">
+                {filtered.length} of {ranked.length} source-checked findings, closest test
+                conditions first.{" "}
+                {filtersOn && (
                   <button
                     type="button"
-                    onClick={() => setShowAll(!showAll)}
-                    className="self-start rounded-md border border-line bg-surface px-3 py-1.5 text-sm font-semibold hover:bg-surface-2"
+                    onClick={() => setView((v) => ({ ...v, direction: "any", fuel: "any" }))}
+                    className="text-accent underline underline-offset-2"
                   >
-                    {showAll ? `Show top ${TOP_N} only` : `Show all ${filtered.length} findings`}
+                    Clear filters
                   </button>
                 )}
-              </>
-            )}
-          </section>
+              </p>
 
-          {ASK_ENABLED && <AskBox />}
-        </div>
+              {filtered.length === 0 ? (
+                <p className="hatch rounded-lg border border-line p-6 text-sm">
+                  No findings match these filters. Clear the filters to see all {ranked.length}{" "}
+                  findings.
+                </p>
+              ) : view.expert && layout === "table" ? (
+                <EvidenceTable findings={filtered} onVerify={setVerifyId} />
+              ) : (
+                <>
+                  <ol className="flex flex-col gap-3">
+                    {visible.map((finding, index) => (
+                      <motion.li
+                        key={finding.id}
+                        layout="position"
+                        transition={{ duration: 0.2, ease: "easeOut" }}
+                      >
+                        <EvidenceCard
+                          rank={index + 1}
+                          finding={finding}
+                          investigation={investigationById.get(finding.investigation_id)}
+                          atmosphere={atmosphere}
+                          highlighted={revealId === finding.id}
+                          onVerify={setVerifyId}
+                        />
+                      </motion.li>
+                    ))}
+                  </ol>
+                  {filtered.length > TOP_N && (
+                    <button
+                      type="button"
+                      onClick={() => setShowAll(!showAll)}
+                      className="self-start rounded-md border border-line bg-surface px-3 py-1.5 text-sm font-semibold hover:bg-surface-2"
+                    >
+                      {showAll ? `Show top ${TOP_N} only` : `Show all ${filtered.length} findings`}
+                    </button>
+                  )}
+                </>
+              )}
 
-        <div className="flex min-w-0 flex-col gap-6 md:col-span-2 md:grid md:grid-cols-2 xl:sticky xl:top-[68px] xl:col-span-1 xl:flex xl:self-start">
-          <ConditionsChart atmosphere={atmosphere} findings={ranked} cells={cells} onSelect={reveal} />
-          <GapsPanel coverage={coverage} cells={cells} nearest={nearest} onJump={jump} />
+              {ASK_ENABLED && <AskBox />}
+            </section>
+          )}
         </div>
       </main>
 
@@ -254,9 +365,38 @@ export default function Dashboard() {
 
       <VerifyDrawer
         finding={verifyFinding}
-        investigation={verifyFinding ? investigationById.get(verifyFinding.investigation_id) : undefined}
+        investigation={
+          verifyFinding ? investigationById.get(verifyFinding.investigation_id) : undefined
+        }
         onClose={() => setVerifyId(null)}
       />
     </MotionConfig>
+  );
+}
+
+function FuelChip({
+  label,
+  count,
+  active,
+  onClick,
+}: {
+  label: string;
+  count: number;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      aria-pressed={active}
+      onClick={onClick}
+      className={`rounded-full border px-3 py-1 text-xs font-semibold ${
+        active
+          ? "border-accent bg-accent/10 text-accent"
+          : "border-line bg-surface text-ink-2 hover:text-ink"
+      }`}
+    >
+      {label} <span className="num font-normal">{count}</span>
+    </button>
   );
 }

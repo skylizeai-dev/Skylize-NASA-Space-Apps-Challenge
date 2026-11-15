@@ -81,7 +81,7 @@ export const FUEL_GROUP_LABEL: Record<FuelGroup, string> = {
   fabric: "Fabric",
   liquid: "Liquid droplets",
   gas: "Gas burner",
-  other: "Other solids",
+  other: "Mixed or other solids",
 };
 
 export function fuelGroup(finding: Finding): FuelGroup {

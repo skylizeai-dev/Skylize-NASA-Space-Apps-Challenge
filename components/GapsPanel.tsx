@@ -27,7 +27,7 @@ export default function GapsPanel({ coverage, cells, nearest, onJump }: Props) {
       aria-label="Data gaps"
       className="flex flex-col gap-3 rounded-lg border border-line bg-surface p-4"
     >
-      <h2 className="text-base font-semibold">Data gaps</h2>
+      <h3 className="text-base font-semibold">Data gaps</h3>
 
       <p className="text-sm">
         Your atmosphere sits in {coverage.status === "untested" ? "an" : "a"}{" "}

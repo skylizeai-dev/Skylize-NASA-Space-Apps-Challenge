@@ -12,8 +12,10 @@ export interface ViewState {
   burning: boolean;
 }
 
-export type Panel = "overview" | "coverage" | "evidence" | "implications";
-export const PANELS: Panel[] = ["overview", "coverage", "evidence", "implications"];
+// "setup" is the step-by-step environment builder; the rest are the result views.
+export type Panel = "setup" | "overview" | "coverage" | "evidence" | "implications";
+export const PANELS: Panel[] = ["setup", "overview", "coverage", "evidence", "implications"];
+export const RESULT_TABS: Panel[] = ["overview", "coverage", "evidence", "implications"];
 
 export function parsePanel(params: URLSearchParams): Panel {
   const raw = params.get("view") ?? "";

@@ -86,6 +86,18 @@ test conditions lie within +/-5 % O2 and +/-15 kPa of it, **thin** with 1 or 2,
 same rule drives the verdict, the chart hatching and the gaps panel
 (`lib/coverage.ts`).
 
+## Step-by-step setup
+
+A first visit opens a setup that builds the environment to test, one card per
+question, in order: habitat, oxygen, pressure, airflow, material, review.
+Values apply live, so a side panel shows the environment and how much evidence
+exists near it while you answer. "Show the evidence" opens the results. Shared
+links that already carry an atmosphere (`?o2=...`) skip the setup, and
+"Build a new environment step by step" reopens it.
+
+The picture in the side panel (`components/CabinScene.tsx`) is the slot for
+the 3D ISS cabin model; see `docs/CABIN_3D_CONTRACT.md`.
+
 ## Overview and detail views
 
 The dashboard opens on an overview: an evidence readout that compares the

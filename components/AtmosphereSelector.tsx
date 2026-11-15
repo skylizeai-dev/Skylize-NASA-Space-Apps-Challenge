@@ -14,7 +14,12 @@ interface Props {
   onFilters: (filters: Pick<ViewState, "direction" | "fuel">) => void;
 }
 
-const DIRECTIONS: FlowDirection[] = ["opposed", "concurrent", "quiescent", "unknown"];
+const DIRECTIONS: FlowDirection[] = [
+  "opposed",
+  "concurrent",
+  "quiescent",
+  "unknown",
+];
 
 export default function AtmosphereSelector({
   presets,
@@ -29,11 +34,11 @@ export default function AtmosphereSelector({
   return (
     <section
       aria-label="Atmosphere"
-      className="flex flex-col gap-5 rounded-lg border border-line bg-surface p-4"
+      className="flex flex-col gap-4 rounded-lg border border-line bg-surface px-4 py-3"
     >
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-1.5">
         <h2 className="text-base font-semibold">Atmosphere</h2>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-1.5">
           {presets.map((preset) => {
             const active = activePresetId === preset.id;
             return (
@@ -49,36 +54,39 @@ export default function AtmosphereSelector({
                   })
                 }
                 title={preset.description}
-                className={`flex flex-col items-start rounded-md border px-3 py-2 text-left transition-colors ${
+                className={`flex flex-wrap items-baseline gap-x-2 rounded-md border px-3 py-1.5 text-left transition-colors ${
                   active
                     ? "border-accent bg-accent/10"
                     : "border-line bg-bg hover:bg-surface-2"
                 }`}
               >
-                <span className={`font-semibold ${active ? "text-accent" : "text-ink"}`}>
+                <span
+                  className={`font-semibold ${active ? "text-accent" : "text-ink"}`}
+                >
                   {preset.label}
                 </span>
                 <span className="tnum text-xs text-ink-2">
-                  {fmtNum(preset.oxygen_pct)} % O₂, {fmtNum(preset.pressure_kpa)} kPa
+                  {fmtNum(preset.oxygen_pct)} % O₂,{" "}
+                  {fmtNum(preset.pressure_kpa)} kPa
                 </span>
               </button>
             );
           })}
           <p
-            className={`rounded-md border border-dashed px-3 py-2 text-xs ${
+            className={`rounded-md border border-dashed px-3 py-1 text-xs ${
               activePresetId === "custom"
                 ? "border-accent text-accent"
                 : "border-line text-muted"
             }`}
           >
             {activePresetId === "custom"
-              ? "Custom atmosphere. Evidence re-ranks as you move a slider."
-              : "Move a slider to set a custom atmosphere."}
+              ? "Custom atmosphere"
+              : "Move a slider to customise"}
           </p>
         </div>
       </div>
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-3">
         <Field
           label="Oxygen"
           unit="% O₂"
@@ -96,7 +104,9 @@ export default function AtmosphereSelector({
           scale={psi ? KPA_TO_PSI : 1}
           value={atmosphere.pressure_kpa}
           hint="Limited to 30 to 110 kPa. Sea level is about 101 kPa. The flight tests in this dataset span 54 to 101 kPa."
-          onChange={(pressure_kpa) => onAtmosphere({ ...atmosphere, pressure_kpa })}
+          onChange={(pressure_kpa) =>
+            onAtmosphere({ ...atmosphere, pressure_kpa })
+          }
           action={
             <button
               type="button"
@@ -126,7 +136,10 @@ export default function AtmosphereSelector({
             value={view.direction}
             options={DIRECTIONS.map((d) => [d, FLOW_LABEL[d]])}
             onChange={(direction) =>
-              onFilters({ direction: direction as FlowDirection | "any", fuel: view.fuel })
+              onFilters({
+                direction: direction as FlowDirection | "any",
+                fuel: view.fuel,
+              })
             }
           />
         </div>
@@ -181,7 +194,7 @@ function Field({
                 onChange(clamp(Number(next.toFixed(1)), range.min, range.max));
               }
             }}
-            className="num w-16 rounded border border-line bg-bg px-2 py-1 text-right text-sm text-ink"
+            className="num w-16 rounded border border-line bg-bg px-2 py-0.5 text-right text-sm text-ink"
           />
           <span className="w-9 text-xs text-ink-2">{unit}</span>
         </div>
@@ -195,7 +208,7 @@ function Field({
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
       />
-      <div className="num flex justify-between text-xs text-muted">
+      <div className="num flex justify-between text-xs leading-none text-muted">
         <span>{fmtNum(Number((range.min * scale).toFixed(1)))}</span>
         <span>{fmtNum(Number((range.max * scale).toFixed(1)))}</span>
       </div>

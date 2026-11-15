@@ -1,19 +1,38 @@
 import { NEAR, type Coverage, type CoverageStatus } from "@/lib/coverage";
-import { OUTCOMES, OUTCOME_META, fmtNum, investigationLabel } from "@/lib/format";
+import {
+  OUTCOMES,
+  OUTCOME_META,
+  fmtNum,
+  investigationLabel,
+} from "@/lib/format";
 import type { Atmosphere, ScoredFinding } from "@/lib/schema";
 import { OutcomeIcon } from "./Outcome";
 
-export const STATUS_COPY: Record<CoverageStatus, { label: string; className: string }> = {
-  tested: { label: "Tested", className: "border-accent bg-accent/10 text-accent" },
+export const STATUS_COPY: Record<
+  CoverageStatus,
+  { label: string; className: string }
+> = {
+  tested: {
+    label: "Tested",
+    className: "border-accent bg-accent/10 text-accent",
+  },
   thin: { label: "Thin", className: "hatch-light border-ink-2 text-ink" },
   untested: { label: "Untested", className: "hatch border-ink-2 text-ink" },
 };
 
-export function StatusPill({ status, small = false }: { status: CoverageStatus; small?: boolean }) {
+export function StatusPill({
+  status,
+  small = false,
+}: {
+  status: CoverageStatus;
+  small?: boolean;
+}) {
   const copy = STATUS_COPY[status];
   const size = small ? "px-2 py-0.5 text-xs" : "px-3 py-1 text-sm";
   return (
-    <span className={`shrink-0 rounded-full border font-semibold ${size} ${copy.className}`}>
+    <span
+      className={`shrink-0 rounded-full border font-semibold ${size} ${copy.className}`}
+    >
       {copy.label}
     </span>
   );
@@ -36,7 +55,12 @@ interface VerdictProps {
 }
 
 // How much evidence sits near the selected atmosphere.
-export function CoverageVerdict({ atmosphere, coverage, nearest, onJump }: VerdictProps) {
+export function CoverageVerdict({
+  atmosphere,
+  coverage,
+  nearest,
+  onJump,
+}: VerdictProps) {
   return (
     <section
       aria-label="Coverage verdict"
@@ -44,10 +68,13 @@ export function CoverageVerdict({ atmosphere, coverage, nearest, onJump }: Verdi
     >
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
         <StatusPill status={coverage.status} />
-        <p className="text-base leading-snug font-semibold">{coverageHeadline(coverage)}</p>
+        <p className="text-base leading-snug font-semibold">
+          {coverageHeadline(coverage)}
+        </p>
         <p className="tnum text-xs text-ink-2">
-          {fmtNum(atmosphere.oxygen_pct)} % O₂, {fmtNum(atmosphere.pressure_kpa)} kPa,{" "}
-          {fmtNum(atmosphere.flow_cm_s)} cm/s
+          {fmtNum(atmosphere.oxygen_pct)} % O₂,{" "}
+          {fmtNum(atmosphere.pressure_kpa)} kPa, {fmtNum(atmosphere.flow_cm_s)}{" "}
+          cm/s
         </p>
       </div>
       {coverage.conditions === 0 ? (
@@ -59,15 +86,16 @@ export function CoverageVerdict({ atmosphere, coverage, nearest, onJump }: Verdi
               onClick={() => onJump(nearest.oxygen_pct, nearest.pressure_kpa)}
               className="tnum text-accent underline underline-offset-2"
             >
-              {fmtNum(nearest.oxygen_pct)} % O₂, {fmtNum(nearest.pressure_kpa)} kPa
+              {fmtNum(nearest.oxygen_pct)} % O₂, {fmtNum(nearest.pressure_kpa)}{" "}
+              kPa
             </button>
             . The evidence view still ranks the closest findings that do exist.
           </p>
         )
       ) : (
         <p className="text-sm text-ink-2">
-          Close range is ±{NEAR.oxygen_pct} % O₂ and ±{NEAR.pressure_kpa} kPa. From{" "}
-          {coverage.investigations.map(investigationLabel).join(", ")}.{" "}
+          Close range is ±{NEAR.oxygen_pct} % O₂ and ±{NEAR.pressure_kpa} kPa.
+          From {coverage.investigations.map(investigationLabel).join(", ")}.{" "}
           {coverage.status === "thin" &&
             "Fewer than 3 distinct test conditions, so treat this as thin evidence."}
         </p>
@@ -86,7 +114,11 @@ export function outcomeCounts(top: ScoredFinding[]) {
     };
   }).filter((c) => c.count > 0);
   const lead = [...counts].sort((a, b) => b.count - a.count)[0];
-  return { counts, lead, totalWeight: counts.reduce((sum, c) => sum + c.weight, 0) };
+  return {
+    counts,
+    lead,
+    totalWeight: counts.reduce((sum, c) => sum + c.weight, 0),
+  };
 }
 
 export function outcomeHeadline(top: ScoredFinding[]): string {
@@ -109,9 +141,11 @@ export function OutcomeSummary({
   const { counts, totalWeight } = outcomeCounts(top);
   if (counts.length === 0) return null;
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-1.5">
       {headline && (
-        <p className={compact ? "text-sm leading-snug font-semibold" : "text-sm"}>
+        <p
+          className={compact ? "text-sm leading-snug font-semibold" : "text-sm"}
+        >
           {outcomeHeadline(top)}
         </p>
       )}
@@ -141,7 +175,9 @@ export function OutcomeSummary({
           </li>
         ))}
         {!compact && (
-          <li className="text-muted">Bar widths are weighted by score. Counts are raw.</li>
+          <li className="text-muted">
+            Bar widths are weighted by score. Counts are raw.
+          </li>
         )}
       </ul>
     </div>

@@ -125,7 +125,7 @@ export default function ConditionsChart({ atmosphere, findings, cells, onSelect 
       {/* The plot scales with the window height so the whole view fits at 100 % zoom. */}
       <div
         className="relative min-w-[240px] flex-1"
-        style={{ maxWidth: "max(270px, calc((100dvh - 410px) * 1.125))" }}
+        style={{ maxWidth: "max(220px, calc((100dvh - 395px) * 1.125))" }}
       >
         <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="group" aria-label="Oxygen against pressure, with every plottable finding and your atmosphere">
           <defs>

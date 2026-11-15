@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { useId, useMemo } from "react";
 import {
   CELL,
@@ -10,12 +11,12 @@ import {
 import { OUTCOME_META, fmtNum, investigationLabel } from "@/lib/format";
 import type { Panel } from "@/lib/url";
 import type { Atmosphere, Investigation, ScoredFinding } from "@/lib/schema";
-import { OutcomeSummary, StatusPill, outcomeCounts } from "./AnswerStrip";
+import { OutcomeSummary, StatusPill, coverageHeadline } from "./AnswerStrip";
 import { runs } from "./ConditionsChart";
 import { validImplications, type Implication } from "./Implications";
-import { OutcomeChip, OutcomeIcon } from "./Outcome";
+import { OutcomeChip } from "./Outcome";
 
-// One atmosphere's evidence in brief: used side by side to compare atmospheres.
+// One atmosphere's evidence in brief: used to compare atmospheres.
 export interface Readout {
   id: string;
   label: string;
@@ -39,8 +40,9 @@ interface Props {
   onVerify: (id: string) => void;
 }
 
-// Every output category on one screen. The readout answers the question; each
-// tile below states its part of the answer and opens its detail view.
+// Read top to bottom: the answer for this atmosphere, then the same answer for
+// the other atmosphere, then the two ways to go deeper. Only the answer carries
+// weight; everything else stays quiet until the reader asks for it.
 export default function Overview({
   atmosphere,
   readouts,
@@ -58,37 +60,36 @@ export default function Overview({
   const share = coverageShare(cells);
   const { valid, cited } = validImplications(implications, top);
   const lead = ranked[0];
+  const current = coverageFor(readouts, activeId, atmosphere);
+  const others = readouts.filter((r) => r.id !== activeId);
 
   return (
     <div className="flex flex-col gap-3">
+      {/* 1. The answer. The one loud thing on the screen. */}
       <section
-        aria-label="Evidence readout"
-        className="grid grid-cols-1 gap-x-5 gap-y-3 rounded-lg border border-line bg-surface px-4 py-3 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]"
+        aria-label="Answer"
+        className="flex flex-col gap-2 rounded-lg border border-line bg-surface px-5 py-3"
       >
-        <div className="flex flex-col gap-2">
-          <h2 className="text-sm font-semibold">How much evidence, side by side</h2>
-          <div className="flex flex-1 flex-col gap-2 sm:flex-row">
-            {readouts.map((readout) => (
-              <ReadoutColumn
-                key={readout.id}
-                readout={readout}
-                active={readout.id === activeId}
-                onSelect={() => onAtmosphere(readout.atmosphere)}
-              />
-            ))}
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <StatusPill status={current.status} />
+            <h2 className="max-w-[60ch] text-xl leading-snug font-semibold">
+              {coverageHeadline(current)}
+            </h2>
           </div>
         </div>
 
+        <OutcomeSummary top={top} />
+
         {lead && (
-          <div className="flex flex-col gap-2">
-            <div className="flex flex-wrap items-baseline justify-between gap-2">
-              <h2 className="text-sm font-semibold">Highest-ranked finding</h2>
-              <OutcomeChip outcome={lead.outcome} />
-            </div>
-            <p className="line-clamp-3 text-sm">{lead.finding}</p>
-            <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+          <div className="flex flex-col gap-0.5 border-t border-line pt-2">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+              <span className="text-ink-2">Highest-ranked</span>
               <a
-                href={investigations.get(lead.investigation_id)?.psi_url ?? lead.source_url}
+                href={
+                  investigations.get(lead.investigation_id)?.psi_url ??
+                  lead.source_url
+                }
                 target="_blank"
                 rel="noopener noreferrer"
                 title={investigations.get(lead.investigation_id)?.name}
@@ -96,6 +97,7 @@ export default function Overview({
               >
                 {investigationLabel(lead.investigation_id)}
               </a>
+              <OutcomeChip outcome={lead.outcome} />
               <button
                 type="button"
                 onClick={() => onReveal(lead.id)}
@@ -103,204 +105,177 @@ export default function Overview({
               >
                 {lead.id}
               </button>
-              <span className="num text-ink-2">score {lead.score.toFixed(2)}</span>
-              <a
-                href={lead.source_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-accent hover:underline"
-              >
-                Open source
-              </a>
+              <span className="num text-ink-2">
+                score {lead.score.toFixed(2)}
+              </span>
               <button
                 type="button"
                 onClick={() => onVerify(lead.id)}
-                className="rounded border border-line bg-bg px-2.5 py-1 font-semibold text-ink hover:bg-surface-2"
+                className="rounded border border-line bg-bg px-2 py-0.5 font-semibold text-ink hover:bg-surface-2"
               >
                 Verify
               </button>
             </div>
+            <p className="line-clamp-2 max-w-[95ch] text-sm">{lead.finding}</p>
           </div>
         )}
+
+        <div className="flex justify-end">
+          <button
+            type="button"
+            onClick={() => onOpen("evidence")}
+            className="rounded-md bg-action px-4 py-2 text-sm font-semibold text-white"
+          >
+            Open all {ranked.length} ranked findings
+          </button>
+        </div>
       </section>
 
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-        <Tile
+      {/* 2. The same question, answered for the other atmosphere. */}
+      {others.length > 0 && (
+        <section
+          aria-label="Other atmospheres"
+          className="flex flex-wrap items-center gap-x-3 gap-y-2"
+        >
+          <h2 className="text-xs text-ink-2">Compare with</h2>
+          {others.map((other) => (
+            <button
+              key={other.id}
+              type="button"
+              onClick={() => onAtmosphere(other.atmosphere)}
+              className="flex flex-wrap items-center gap-x-2 gap-y-1 rounded-md border border-line bg-surface px-3 py-1 text-left text-sm hover:border-accent"
+            >
+              <span className="font-semibold">{other.label}</span>
+              <span className="tnum text-xs text-ink-2">
+                {fmtNum(other.atmosphere.oxygen_pct)} % O₂,{" "}
+                {fmtNum(other.atmosphere.pressure_kpa)} kPa
+              </span>
+              <StatusPill status={other.coverage.status} small />
+              <span className="text-xs text-ink-2">
+                {other.coverage.findings.length}{" "}
+                {other.coverage.findings.length === 1 ? "finding" : "findings"}
+              </span>
+            </button>
+          ))}
+          <p className="ml-auto text-xs text-muted">
+            {ranked.length} source-checked findings from {investigations.size}{" "}
+            NASA investigations. No AI in the ranking or the map.{" "}
+            <Link href="/method" className="text-accent hover:underline">
+              Method and sources
+            </Link>
+          </p>
+        </section>
+      )}
+
+      {/* 3. Two ways to go deeper. Quiet, equal, one line of substance each. */}
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <DeeperRow
           title="Coverage"
-          question="Where are the tests, and where are the gaps?"
           action="Open the test map"
           onOpen={() => onOpen("coverage")}
-        >
-          <div className="flex items-start gap-3">
+          aside={
             <MiniMap atmosphere={atmosphere} cells={cells} findings={ranked} />
-            <ul className="tnum flex min-w-0 flex-col gap-1.5 text-xs text-ink-2">
-              <ShareRow swatch="bg-ramp-1" label="Tested" value={share.tested} />
-              <ShareRow swatch="hatch-light" label="Thin" value={share.thin} />
-              <ShareRow swatch="hatch" label="Untested" value={share.untested} />
-              <li className="text-muted">of the mapped oxygen and pressure plane</li>
-            </ul>
-          </div>
-        </Tile>
-
-        <Tile
-          title="Evidence"
-          question="What happened in the closest tests?"
-          action={`Open all ${ranked.length} ranked findings`}
-          onOpen={() => onOpen("evidence")}
+          }
         >
-          <OutcomeSummary top={top} compact headline={false} />
-          <ol className="flex flex-col border-t border-line">
-            {ranked.slice(0, 3).map((f, index) => (
-              <li
-                key={f.id}
-                className="flex items-center gap-2 border-b border-line py-0.5 text-sm last:border-0"
-              >
-                <span className="num w-3 text-right text-xs text-muted">{index + 1}</span>
-                <span className="min-w-0 flex-1 truncate">
-                  <span className="font-semibold">{investigationLabel(f.investigation_id)}</span>{" "}
-                  <span className="text-ink-2">{f.fuel}</span>
-                </span>
-                <span title={OUTCOME_META[f.outcome].label}>
-                  <OutcomeIcon outcome={f.outcome} size={10} />
-                </span>
-                <span className="num text-xs text-ink-2">{f.score.toFixed(2)}</span>
-              </li>
-            ))}
-          </ol>
-        </Tile>
+          <p className="tnum text-sm text-ink-2">
+            <span className="text-ink">
+              Tested {Math.round(share.tested * 100)} %
+            </span>
+            , thin {Math.round(share.thin * 100)} %, untested{" "}
+            {Math.round(share.untested * 100)} % of the mapped plane.
+          </p>
+        </DeeperRow>
 
-        <Tile
+        <DeeperRow
           title="Safety implications"
-          question="What does that evidence imply?"
-          action={cited.size >= 3 ? `Open ${valid.length} implications` : "Open implications"}
+          action={
+            cited.size >= 3
+              ? `Open ${valid.length} implications`
+              : "Open implications"
+          }
           onOpen={() => onOpen("implications")}
           ai
         >
           {!implications ? (
             <p className="text-sm text-ink-2">
-              Written in advance for the two preset atmospheres. For a custom atmosphere, the
-              ranked evidence is the answer.
+              Written in advance for the two preset atmospheres. For a custom
+              atmosphere, the ranked evidence is the answer.
             </p>
           ) : cited.size < 3 ? (
-            <p className="text-sm text-ink-2">Insufficient evidence for implications.</p>
+            <p className="text-sm text-ink-2">
+              Insufficient evidence for implications.
+            </p>
           ) : (
             <>
-              <ul className="flex flex-col gap-1.5">
-                {valid.slice(0, 2).map((item) => (
-                  <li key={item.implication} className="line-clamp-2 text-sm font-semibold">
-                    {item.implication}
-                  </li>
-                ))}
-              </ul>
+              <p className="line-clamp-2 text-sm">{valid[0]?.implication}</p>
               <p className="text-xs text-ai">
-                AI-generated from NASA PSI records. Based on {cited.size} source-checked findings.
+                AI-generated from {cited.size} source-checked NASA PSI findings.
               </p>
             </>
           )}
-        </Tile>
+        </DeeperRow>
       </div>
-
     </div>
   );
 }
 
-function ReadoutColumn({
-  readout,
-  active,
-  onSelect,
-}: {
-  readout: Readout;
-  active: boolean;
-  onSelect: () => void;
-}) {
-  const { coverage, top, atmosphere } = readout;
-  const { lead } = outcomeCounts(top);
-  return (
-    <button
-      type="button"
-      aria-pressed={active}
-      onClick={onSelect}
-      className={`flex flex-1 flex-col items-start gap-1 rounded-md border px-3 py-2 text-left ${
-        active ? "border-accent bg-accent/5" : "border-line bg-bg hover:bg-surface-2"
-      }`}
-    >
-      <span className="flex flex-wrap items-baseline gap-x-2">
-        <span className={`text-sm font-semibold ${active ? "text-accent" : "text-ink"}`}>
-          {readout.label}
-        </span>
-        <span className="tnum text-xs text-ink-2">
-          {fmtNum(atmosphere.oxygen_pct)} % O₂, {fmtNum(atmosphere.pressure_kpa)} kPa
-        </span>
-      </span>
-      <span className="flex items-center gap-2">
-        <StatusPill status={coverage.status} small />
-        <span className="text-xs text-ink">
-          {coverage.conditions === 0
-            ? "No findings in close range"
-            : `${coverage.findings.length} ${
-                coverage.findings.length === 1 ? "finding" : "findings"
-              }, ${coverage.conditions} test ${
-                coverage.conditions === 1 ? "condition" : "conditions"
-              }`}
-        </span>
-      </span>
-      {lead && (
-        <span className="flex items-center gap-1.5 text-xs text-ink-2">
-          <OutcomeIcon outcome={lead.outcome} size={10} />
-          {OUTCOME_META[lead.outcome].label} in {lead.count} of {top.length} top-ranked
-        </span>
-      )}
-    </button>
-  );
+// The coverage of whichever atmosphere is selected.
+function coverageFor(
+  readouts: Readout[],
+  activeId: string,
+  atmosphere: Atmosphere,
+): Coverage {
+  const match =
+    readouts.find((r) => r.id === activeId) ??
+    readouts.find(
+      (r) =>
+        r.atmosphere.oxygen_pct === atmosphere.oxygen_pct &&
+        r.atmosphere.pressure_kpa === atmosphere.pressure_kpa,
+    );
+  return (match ?? readouts[readouts.length - 1]).coverage;
 }
 
-function ShareRow({ swatch, label, value }: { swatch: string; label: string; value: number }) {
-  return (
-    <li className="flex items-center gap-2">
-      <span className={`${swatch} h-3 w-4 shrink-0 rounded-sm border border-line`} />
-      <span className="text-ink">{label}</span> {Math.round(value * 100)} %
-    </li>
-  );
-}
-
-function Tile({
+function DeeperRow({
   title,
-  question,
   action,
   onOpen,
   ai = false,
+  aside,
   children,
 }: {
   title: string;
-  question: string;
   action: string;
   onOpen: () => void;
   ai?: boolean;
+  aside?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
-    <article
-      className={`flex flex-col gap-2 rounded-lg border border-line bg-surface px-4 py-3 ${
+    <section
+      aria-label={title}
+      className={`flex gap-3 rounded-lg border border-line bg-surface px-4 py-2 ${
         ai ? "border-l-2 border-l-ai" : ""
       }`}
     >
-      <header className="-mb-1">
-        <h2 className="text-base font-semibold">{title}</h2>
-        <p className="text-xs text-ink-2">{question}</p>
-      </header>
-      {children}
-      <button
-        type="button"
-        onClick={onOpen}
-        className="mt-auto w-fit rounded-md border border-line bg-bg px-3 py-1 text-sm font-semibold hover:bg-surface-2"
-      >
-        {action}
-      </button>
-    </article>
+      {aside}
+      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-3">
+          <h2 className="text-sm font-semibold">{title}</h2>
+          <button
+            type="button"
+            onClick={onOpen}
+            className="text-sm font-semibold text-accent hover:underline"
+          >
+            {action}
+          </button>
+        </div>
+        {children}
+      </div>
+    </section>
   );
 }
 
-const SIZE = 92;
+const SIZE = 60;
 const O = DOMAIN.oxygen_pct;
 const P = DOMAIN.pressure_kpa;
 const mx = (o: number) => ((o - O.min) / (O.max - O.min)) * SIZE;
@@ -318,7 +293,7 @@ function MiniMap({
 }) {
   const background = useMemo(() => runs(cells), [cells]);
   const uid = useId().replace(/[^a-zA-Z0-9_-]/g, "");
-  const MINI_FILL: Record<CoverageStatus, string> = {
+  const fill: Record<CoverageStatus, string> = {
     tested: "var(--color-ramp-1)",
     thin: `url(#${uid}-hatch-light)`,
     untested: `url(#${uid}-hatch)`,
@@ -330,16 +305,28 @@ function MiniMap({
       viewBox={`0 0 ${SIZE} ${SIZE}`}
       width={SIZE}
       height={SIZE}
-      className="shrink-0 rounded border border-line"
+      className="shrink-0 self-start rounded border border-line"
       role="img"
       aria-label="Thumbnail of tested oxygen and pressure conditions with your atmosphere marked"
     >
       <defs>
-        <pattern id={`${uid}-hatch`} width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+        <pattern
+          id={`${uid}-hatch`}
+          width="6"
+          height="6"
+          patternUnits="userSpaceOnUse"
+          patternTransform="rotate(45)"
+        >
           <rect width="6" height="6" fill="var(--chart-hatch-bg)" />
           <rect width="1.5" height="6" fill="var(--chart-hatch-line)" />
         </pattern>
-        <pattern id={`${uid}-hatch-light`} width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+        <pattern
+          id={`${uid}-hatch-light`}
+          width="9"
+          height="9"
+          patternUnits="userSpaceOnUse"
+          patternTransform="rotate(45)"
+        >
           <rect width="9" height="9" fill="var(--chart-hatch-bg)" />
           <rect width="1" height="9" fill="var(--chart-hatch-line)" />
         </pattern>
@@ -351,7 +338,7 @@ function MiniMap({
           y={my(r.p + CELL.pressure_kpa)}
           width={mx(r.o + r.width) - mx(r.o) + 0.5}
           height={my(r.p) - my(r.p + CELL.pressure_kpa) + 0.5}
-          fill={MINI_FILL[r.status]}
+          fill={fill[r.status]}
         />
       ))}
       {findings
@@ -361,15 +348,36 @@ function MiniMap({
             key={f.id}
             cx={mx(f.oxygen_pct as number)}
             cy={my(f.pressure_kpa as number)}
-            r="2.5"
+            r="2.2"
             fill={OUTCOME_META[f.outcome].color}
             stroke="var(--chart-mark-halo)"
             strokeWidth="0.75"
           />
         ))}
-      <line x1={cx} x2={cx} y1="0" y2={SIZE} stroke="var(--color-accent)" strokeWidth="1" />
-      <line x1="0" x2={SIZE} y1={cy} y2={cy} stroke="var(--color-accent)" strokeWidth="1" />
-      <circle cx={cx} cy={cy} r="4" fill="var(--chart-mark-halo)" stroke="var(--color-accent)" strokeWidth="2" />
+      <line
+        x1={cx}
+        x2={cx}
+        y1="0"
+        y2={SIZE}
+        stroke="var(--color-accent)"
+        strokeWidth="1"
+      />
+      <line
+        x1="0"
+        x2={SIZE}
+        y1={cy}
+        y2={cy}
+        stroke="var(--color-accent)"
+        strokeWidth="1"
+      />
+      <circle
+        cx={cx}
+        cy={cy}
+        r="3.5"
+        fill="var(--chart-mark-halo)"
+        stroke="var(--color-accent)"
+        strokeWidth="2"
+      />
     </svg>
   );
 }

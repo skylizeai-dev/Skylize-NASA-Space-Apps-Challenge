@@ -246,7 +246,7 @@ export default function Dashboard() {
           />
         </main>
       ) : (
-        <main className="mx-auto grid w-full max-w-[1440px] flex-1 grid-cols-1 gap-4 px-4 pt-3 pb-4 md:grid-cols-[288px_minmax(0,1fr)] xl:grid-cols-[304px_minmax(0,1fr)]">
+        <main className="mx-auto grid w-full max-w-[1440px] flex-1 grid-cols-1 gap-4 px-4 pt-2 pb-3 md:grid-cols-[288px_minmax(0,1fr)] xl:grid-cols-[304px_minmax(0,1fr)]">
           <div className="flex flex-col gap-2 md:sticky md:top-[60px] md:self-start">
             <button
               type="button"
@@ -264,20 +264,19 @@ export default function Dashboard() {
             />
           </div>
 
-          <div className="flex min-w-0 flex-col gap-3">
+          <div className="flex min-w-0 flex-col gap-2.5">
             <div className="flex flex-col-reverse items-start justify-between gap-x-6 gap-y-2 sm:flex-row">
               <div className="flex max-w-[84ch] flex-col gap-1">
-                <h1 className="text-lg leading-snug font-semibold">
+                <h1 className="text-base leading-snug font-semibold">
                   Moon and Mars habitats are expected to run richer oxygen at
                   lower pressure. How much NASA fire evidence exists for that?
                 </h1>
                 {panel === "overview" && (
                   <p className="text-xs text-ink-2">
-                    Pick an atmosphere. See NASA&apos;s microgravity combustion
-                    findings ranked by how closely they were tested to it, each
-                    linked to its source. Evidence from{" "}
+                    Pick an atmosphere. Findings from{" "}
                     {SOURCE_NAMES.slice(0, -1).join(", ")} and{" "}
-                    {SOURCE_NAMES[SOURCE_NAMES.length - 1]}.
+                    {SOURCE_NAMES[SOURCE_NAMES.length - 1]}, ranked by how
+                    closely each was tested to it and each linked to its source.
                   </p>
                 )}
               </div>
@@ -515,12 +514,10 @@ export default function Dashboard() {
       )}
 
       <footer className="border-t border-line">
-        <p className="mx-auto w-full max-w-[1440px] px-4 py-3 text-xs text-muted">
-          Evidence tool. Not a source of design limits. Findings come from NASA
-          microgravity combustion investigations and their publications; every
-          card links to its source. Text marked AI-generated was written from
-          those records. Built for the NASA Space Apps Challenge 2026 by team
-          Skylize. Not affiliated with or endorsed by NASA.
+        <p className="mx-auto w-full max-w-[1440px] px-4 py-1.5 text-xs text-muted">
+          Evidence tool, not a source of design limits. Every finding links to
+          its NASA source. Built for the NASA Space Apps Challenge 2026 by team
+          Skylize, and not affiliated with NASA.
         </p>
       </footer>
 

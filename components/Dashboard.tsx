@@ -9,13 +9,14 @@ import AtmosphereSelector from "./AtmosphereSelector";
 import ConditionsChart from "./ConditionsChart";
 import EvidenceCard from "./EvidenceCard";
 import EvidenceTable, { downloadCsv } from "./EvidenceTable";
+import FlameIllustration from "./FlameIllustration";
 import GapsPanel from "./GapsPanel";
 import Implications, { type Implication } from "./Implications";
-import Overview from "./Overview";
+import Overview, { type Readout } from "./Overview";
 import TopBar from "./TopBar";
 import VerifyDrawer from "./VerifyDrawer";
 import { buildCoverageGrid, coverageAt, nearestTested } from "@/lib/coverage";
-import { FUEL_GROUP_LABEL, fuelGroup, type FuelGroup } from "@/lib/format";
+import { FUEL_GROUP_LABEL, fuelGroup, investigationLabel, type FuelGroup } from "@/lib/format";
 import { rankFindings } from "@/lib/rank";
 import {
   PANELS,
@@ -41,6 +42,19 @@ const investigationById = new Map(investigations.map((i) => [i.id, i]));
 const cells = buildCoverageGrid(findings);
 
 const TOP_N = 8;
+// The two reference atmospheres are always compared, whatever is selected.
+const presetReadouts: Readout[] = presets.map((preset) => ({
+  id: preset.id,
+  label: preset.label,
+  atmosphere: {
+    oxygen_pct: preset.oxygen_pct,
+    pressure_kpa: preset.pressure_kpa,
+    flow_cm_s: preset.flow_cm_s,
+  },
+  coverage: coverageAt(preset.oxygen_pct, preset.pressure_kpa, findings),
+  top: rankFindings(preset, findings).slice(0, TOP_N),
+}));
+const SOURCE_NAMES = investigations.map((i) => investigationLabel(i.id));
 const ASK_ENABLED = process.env.NEXT_PUBLIC_ASK_ENABLED === "1";
 const FUELS = Object.keys(FUEL_GROUP_LABEL) as FuelGroup[];
 
@@ -116,13 +130,16 @@ export default function Dashboard() {
       ranked.filter(
         (f) =>
           (view.fuel === "any" || fuelGroup(f) === view.fuel) &&
+          (!view.burning || f.outcome === "spread" || f.outcome === "steady") &&
           (!view.expert || view.direction === "any" || f.flow_direction === view.direction)
       ),
-    [ranked, view.expert, view.direction, view.fuel]
+    [ranked, view.expert, view.direction, view.fuel, view.burning]
   );
+  const burningCount = ranked.filter((f) => f.outcome === "spread" || f.outcome === "steady").length;
   const top = ranked.slice(0, TOP_N);
   const visible = showAll ? filtered : filtered.slice(0, TOP_N);
-  const filtersOn = view.fuel !== "any" || (view.expert && view.direction !== "any");
+  const filtersOn =
+    view.fuel !== "any" || view.burning || (view.expert && view.direction !== "any");
 
   const activePreset =
     presets.find(
@@ -136,7 +153,7 @@ export default function Dashboard() {
   // unfiltered, then scroll to it and flash it once it is on screen.
   const reveal = useCallback(
     (id: string) => {
-      const next = { ...view, direction: "any" as const, fuel: "any" as const };
+      const next = { ...view, direction: "any" as const, fuel: "any" as const, burning: false };
       setView(next);
       setLayout("cards");
       setShowAll(true);
@@ -160,13 +177,18 @@ export default function Dashboard() {
     };
   }, [revealId, panel]);
 
+  const readouts: Readout[] =
+    activePreset === "custom"
+      ? [...presetReadouts, { id: "custom", label: "Your atmosphere", atmosphere, coverage, top }]
+      : presetReadouts;
+
   const verifyFinding = ranked.find((f) => f.id === verifyId) ?? null;
 
   return (
     <MotionConfig reducedMotion="user">
       <TopBar expert={view.expert} onExpert={(expert) => setView((v) => ({ ...v, expert }))} />
 
-      <main className="mx-auto grid w-full max-w-[1440px] flex-1 grid-cols-1 gap-6 px-4 py-6 md:grid-cols-[300px_minmax(0,1fr)] xl:grid-cols-[320px_minmax(0,1fr)]">
+      <main className="mx-auto grid w-full max-w-[1440px] flex-1 grid-cols-1 gap-6 px-4 py-4 md:grid-cols-[300px_minmax(0,1fr)] xl:grid-cols-[320px_minmax(0,1fr)]">
         <div className="md:sticky md:top-[68px] md:self-start">
           <AtmosphereSelector
             presets={presets}
@@ -177,10 +199,23 @@ export default function Dashboard() {
           />
         </div>
 
-        <div className="flex min-w-0 flex-col gap-4">
-          <h1 className="text-xl leading-snug font-semibold">
-            What does NASA&apos;s microgravity fire evidence say about this atmosphere?
-          </h1>
+        <div className="flex min-w-0 flex-col gap-3">
+          <div className="flex flex-col-reverse items-start justify-between gap-x-8 gap-y-3 sm:flex-row">
+            <div className="flex max-w-[78ch] flex-col gap-2">
+              <h1 className="text-xl leading-snug font-semibold">
+                Moon and Mars habitats are expected to run richer oxygen at lower pressure. How
+                much NASA fire evidence exists for that?
+              </h1>
+              {panel === "overview" && (
+                <p className="text-sm text-ink-2">
+                  Pick an atmosphere. See NASA&apos;s microgravity combustion findings ranked by how
+                  closely they were tested to it, each linked to its source. Evidence from{" "}
+                  {SOURCE_NAMES.slice(0, -1).join(", ")} and {SOURCE_NAMES[SOURCE_NAMES.length - 1]}.
+                </p>
+              )}
+            </div>
+            {panel === "overview" && <FlameIllustration />}
+          </div>
 
           <nav aria-label="Outputs" className="flex flex-wrap gap-1 border-b border-line">
             {PANELS.map((option) => (
@@ -203,13 +238,17 @@ export default function Dashboard() {
           {panel === "overview" && (
             <Overview
               atmosphere={atmosphere}
-              coverage={coverage}
+              readouts={readouts}
+              activeId={activePreset}
               cells={cells}
               ranked={ranked}
               top={top}
               implications={implications[activePreset]}
-              investigationCount={investigations.length}
+              investigations={investigationById}
+              onAtmosphere={setAtmosphere}
               onOpen={open}
+              onReveal={reveal}
+              onVerify={setVerifyId}
             />
           )}
 
@@ -244,7 +283,7 @@ export default function Dashboard() {
               </div>
 
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <div role="group" aria-label="Fuel type" className="flex flex-wrap gap-1.5">
+                <div role="group" aria-label="Filter findings" className="flex flex-wrap gap-1.5">
                   <FuelChip
                     label="All fuels"
                     count={ranked.length}
@@ -260,6 +299,12 @@ export default function Dashboard() {
                       onClick={() => setView((v) => ({ ...v, fuel }))}
                     />
                   ))}
+                  <FuelChip
+                    label="Only spread or sustained burning"
+                    count={burningCount}
+                    active={view.burning}
+                    onClick={() => setView((v) => ({ ...v, burning: !v.burning }))}
+                  />
                 </div>
                 {view.expert && (
                   <div className="flex items-center gap-3 text-xs">
@@ -301,7 +346,9 @@ export default function Dashboard() {
                 {filtersOn && (
                   <button
                     type="button"
-                    onClick={() => setView((v) => ({ ...v, direction: "any", fuel: "any" }))}
+                    onClick={() =>
+                      setView((v) => ({ ...v, direction: "any", fuel: "any", burning: false }))
+                    }
                     className="text-accent underline underline-offset-2"
                   >
                     Clear filters
@@ -355,7 +402,7 @@ export default function Dashboard() {
       </main>
 
       <footer className="border-t border-line">
-        <p className="mx-auto w-full max-w-[1440px] px-4 py-4 text-xs text-muted">
+        <p className="mx-auto w-full max-w-[1440px] px-4 py-3 text-xs text-muted">
           Evidence tool. Not a source of design limits. Findings come from NASA microgravity
           combustion investigations and their publications; every card links to its source. Text
           marked AI-generated was written from those records. Built for the NASA Space Apps

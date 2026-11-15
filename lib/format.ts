@@ -1,8 +1,6 @@
 // Shared display vocabulary: names, outcome labels, units, glossary.
 import type { Finding, FlowDirection, Outcome } from "./schema";
 
-export const APP_NAME = "FireSight";
-
 export const OUTCOMES: Outcome[] = [
   "spread",
   "steady",

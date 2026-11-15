@@ -101,7 +101,7 @@ export function OutcomeSummary({ top, compact = false }: { top: ScoredFinding[];
   if (counts.length === 0) return null;
   return (
     <div className="flex flex-col gap-2">
-      <p className={compact ? "text-base leading-snug font-semibold" : "text-sm"}>
+      <p className={compact ? "text-sm leading-snug font-semibold" : "text-sm"}>
         {outcomeHeadline(top)}
       </p>
       <div

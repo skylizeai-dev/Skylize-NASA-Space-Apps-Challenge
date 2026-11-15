@@ -65,10 +65,10 @@ publishing. In the running app:
   method/page.tsx     ranking formula, worked example, coverage rule, data list, limits
   api/ask/route.ts    Q&A endpoint
 /components           Dashboard, Overview, TopBar, AtmosphereSelector, AnswerStrip, Implications,
-                      EvidenceCard, EvidenceTable, VerifyDrawer, ConditionsChart,
+                      EvidenceCard, EvidenceTable, VerifyDrawer, ConditionsChart, FlameIllustration,
                       GapsPanel, AskBox
 /data                 investigations.json, findings.json, presets.json, implications.json
-/lib                  rank.ts, coverage.ts, url.ts, format.ts, schema.ts
+/lib                  rank.ts, coverage.ts, url.ts, format.ts, config.ts, schema.ts
 ```
 
 ## Coverage rule
@@ -81,9 +81,10 @@ same rule drives the verdict, the chart hatching and the gaps panel
 
 ## Overview and detail views
 
-The dashboard opens on an overview: one tile per output category (Coverage,
-Evidence, Safety implications, Method and data), each stating its answer.
-A tile opens its detail view. The view state (atmosphere, open view, mode,
+The dashboard opens on an overview: an evidence readout that compares the
+ISS cabin and the exploration atmosphere side by side and shows the
+highest-ranked finding, then one tile per output category (Coverage,
+Evidence, Safety implications). A tile opens its detail view. The view state (atmosphere, open view, mode,
 filters) lives in the URL, e.g. `?o2=34&p=56.5&flow=15&view=evidence`, so any
 view can be shared and the browser Back button returns to the overview.
 

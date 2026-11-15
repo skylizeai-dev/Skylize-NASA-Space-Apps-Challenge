@@ -8,6 +8,8 @@ export interface ViewState {
   expert: boolean;
   direction: FlowDirection | "any";
   fuel: FuelGroup | "any";
+  // Show only findings where the flame spread or kept burning.
+  burning: boolean;
 }
 
 export type Panel = "overview" | "coverage" | "evidence" | "implications";
@@ -49,6 +51,7 @@ export function parseView(params: URLSearchParams, fallback: Atmosphere): ViewSt
     expert: params.get("mode") === "expert",
     direction: DIRECTIONS.includes(direction) ? (direction as FlowDirection) : "any",
     fuel: FUELS.includes(fuel) ? (fuel as FuelGroup) : "any",
+    burning: params.get("burn") === "1",
   };
 }
 
@@ -60,6 +63,7 @@ export function serializeView(view: ViewState, panel: Panel = "overview"): strin
   if (view.expert) params.set("mode", "expert");
   if (view.expert && view.direction !== "any") params.set("dir", view.direction);
   if (view.fuel !== "any") params.set("fuel", view.fuel);
+  if (view.burning) params.set("burn", "1");
   if (panel !== "overview") params.set("view", panel);
   return params.toString();
 }

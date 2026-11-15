@@ -188,6 +188,24 @@ dialog.drawer[open] {
   }
 }
 
+/* The one ambient motion on the page: the hero flames breathe slowly. */
+.flame-pulse {
+  animation: flame-pulse 3.2s ease-in-out infinite alternate;
+}
+.flame-pulse-slow {
+  animation-duration: 5s;
+}
+@keyframes flame-pulse {
+  from {
+    transform: scale(0.96);
+    opacity: 0.88;
+  }
+  to {
+    transform: scale(1.03);
+    opacity: 1;
+  }
+}
+
 .skeleton {
   background: var(--color-surface);
   border: 1px solid var(--color-line);
@@ -196,7 +214,8 @@ dialog.drawer[open] {
 
 @media (prefers-reduced-motion: reduce) {
   dialog.drawer[open],
-  .card-flash {
+  .card-flash,
+  .flame-pulse {
     animation: none;
   }
 }

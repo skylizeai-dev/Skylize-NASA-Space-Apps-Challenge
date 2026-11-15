@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { APP_NAME } from "@/lib/format";
+import { APP_NAME } from "@/lib/config";
 
 interface Props {
   expert?: boolean;

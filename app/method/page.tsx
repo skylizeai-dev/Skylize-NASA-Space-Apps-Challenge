@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import TopBar from "@/components/TopBar";
 import { NEAR, coverageAt } from "@/lib/coverage";
-import { APP_NAME, fmtNum, investigationLabel } from "@/lib/format";
+import { APP_NAME } from "@/lib/config";
+import { fmtNum, investigationLabel } from "@/lib/format";
 import { CONDITION_RANGES, scoreFinding } from "@/lib/rank";
 import type { Finding, Investigation, Preset } from "@/lib/schema";
 
@@ -25,6 +26,8 @@ const exploration = (presetsData as Preset[]).find(
 const example = findings.find((f) => f.id === "saffire-005") ?? findings[0];
 const scored = scoreFinding(exploration, example);
 const exampleCoverage = coverageAt(exploration.oxygen_pct, exploration.pressure_kpa, findings);
+const cabin = (presetsData as Preset[]).find((p) => p.id === "iss-cabin") as Preset;
+const cabinCoverage = coverageAt(cabin.oxygen_pct, cabin.pressure_kpa, findings);
 
 function term(target: number, value: number | null, range: number, unit: string) {
   if (value === null) return "not reported, skipped";
@@ -115,7 +118,10 @@ score        ${scored.score.toFixed(3)}`}
           </ul>
           <p>
             The same rule gives the verdict for your atmosphere, the hatching on the chart and the
-            gaps panel. For the exploration preset it returns{" "}
+            gaps panel. For the ISS cabin preset it returns{" "}
+            <strong className="font-semibold text-ink">{cabinCoverage.status}</strong>:{" "}
+            {cabinCoverage.findings.length} findings from {cabinCoverage.conditions} test
+            conditions. For the exploration preset it returns{" "}
             <strong className="font-semibold text-ink">{exampleCoverage.status}</strong>:{" "}
             {exampleCoverage.findings.length} findings from {exampleCoverage.conditions} test
             conditions. A gap is not evidence of safety. It means this dataset holds no

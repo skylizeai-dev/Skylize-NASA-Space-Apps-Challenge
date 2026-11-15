@@ -8,143 +8,268 @@ import {
   type CoverageCell,
   type CoverageStatus,
 } from "@/lib/coverage";
-import { OUTCOME_META, investigationLabel } from "@/lib/format";
+import { OUTCOME_META, fmtNum, investigationLabel } from "@/lib/format";
 import type { Panel } from "@/lib/url";
-import type { Atmosphere, ScoredFinding } from "@/lib/schema";
-import { OutcomeSummary, StatusPill, coverageHeadline } from "./AnswerStrip";
+import type { Atmosphere, Investigation, ScoredFinding } from "@/lib/schema";
+import { OutcomeSummary, StatusPill, outcomeCounts } from "./AnswerStrip";
 import { runs } from "./ConditionsChart";
 import { validImplications, type Implication } from "./Implications";
-import { OutcomeIcon } from "./Outcome";
+import { OutcomeChip, OutcomeIcon } from "./Outcome";
+
+// One atmosphere's evidence in brief: used side by side to compare atmospheres.
+export interface Readout {
+  id: string;
+  label: string;
+  atmosphere: Atmosphere;
+  coverage: Coverage;
+  top: ScoredFinding[];
+}
 
 interface Props {
   atmosphere: Atmosphere;
-  coverage: Coverage;
+  readouts: Readout[];
+  activeId: string;
   cells: CoverageCell[];
   ranked: ScoredFinding[];
   top: ScoredFinding[];
   implications: Implication[] | undefined;
-  investigationCount: number;
+  investigations: Map<string, Investigation>;
+  onAtmosphere: (atmosphere: Atmosphere) => void;
   onOpen: (panel: Panel) => void;
+  onReveal: (id: string) => void;
+  onVerify: (id: string) => void;
 }
 
-// Every output category on one screen. Each tile states its answer and opens its detail view.
+// Every output category on one screen. The readout answers the question; each
+// tile below states its part of the answer and opens its detail view.
 export default function Overview({
   atmosphere,
-  coverage,
+  readouts,
+  activeId,
   cells,
   ranked,
   top,
   implications,
-  investigationCount,
+  investigations,
+  onAtmosphere,
   onOpen,
+  onReveal,
+  onVerify,
 }: Props) {
   const share = coverageShare(cells);
   const { valid, cited } = validImplications(implications, top);
+  const lead = ranked[0];
 
   return (
-    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-      <Tile title="Coverage" question="Has this atmosphere been tested?" action="Open the test map" onOpen={() => onOpen("coverage")}>
-        <div className="flex items-start gap-4">
-          <MiniMap atmosphere={atmosphere} cells={cells} findings={ranked} />
-          <div className="flex min-w-0 flex-col items-start gap-2">
-            <StatusPill status={coverage.status} />
-            <p className="text-base leading-snug font-semibold">{coverageHeadline(coverage)}</p>
-            <p className="tnum text-xs text-ink-2">
-              Across the mapped plane: tested {Math.round(share.tested * 100)} %, thin{" "}
-              {Math.round(share.thin * 100)} %, untested {Math.round(share.untested * 100)} %.
-            </p>
+    <div className="flex flex-col gap-3">
+      <section
+        aria-label="Evidence readout"
+        className="grid grid-cols-1 gap-4 rounded-lg border border-line bg-surface p-4 lg:grid-cols-2"
+      >
+        <div className="flex flex-col gap-2">
+          <h2 className="text-base font-semibold">How much evidence, side by side</h2>
+          <div className="flex flex-1 flex-col gap-2 sm:flex-row">
+            {readouts.map((readout) => (
+              <ReadoutColumn
+                key={readout.id}
+                readout={readout}
+                active={readout.id === activeId}
+                onSelect={() => onAtmosphere(readout.atmosphere)}
+              />
+            ))}
           </div>
         </div>
-      </Tile>
 
-      <Tile
-        title="Evidence"
-        question="What happened in the closest tests?"
-        action={`Open all ${ranked.length} ranked findings`}
-        onOpen={() => onOpen("evidence")}
-      >
-        <OutcomeSummary top={top} compact />
-        <ol className="flex flex-col border-t border-line">
-          {ranked.slice(0, 3).map((f, index) => (
-            <li
-              key={f.id}
-              className="flex items-center gap-2 border-b border-line py-1.5 text-sm last:border-0"
-            >
-              <span className="num w-4 text-right text-xs text-muted">{index + 1}</span>
-              <span className="min-w-0 flex-1 truncate">
-                <span className="font-semibold">{investigationLabel(f.investigation_id)}</span>{" "}
-                <span className="text-ink-2">{f.fuel}</span>
-              </span>
-              <span className="flex items-center gap-1 text-xs" style={{ color: OUTCOME_META[f.outcome].color }}>
-                <OutcomeIcon outcome={f.outcome} size={10} />
-                {OUTCOME_META[f.outcome].label}
-              </span>
-              <span className="num text-xs text-ink-2">{f.score.toFixed(2)}</span>
-            </li>
-          ))}
-        </ol>
-      </Tile>
-
-      <Tile
-        title="Safety implications"
-        question="What does that evidence imply?"
-        action={cited.size >= 3 ? `Open ${valid.length} implications with their evidence` : "Open implications"}
-        onOpen={() => onOpen("implications")}
-        ai
-      >
-        {!implications ? (
-          <p className="text-sm text-ink-2">
-            Written in advance for the two preset atmospheres. For a custom atmosphere, the
-            ranked evidence is the answer.
-          </p>
-        ) : cited.size < 3 ? (
-          <p className="text-sm text-ink-2">Insufficient evidence for implications.</p>
-        ) : (
-          <>
-            <ul className="flex flex-col gap-2">
-              {valid.slice(0, 3).map((item) => (
-                <li key={item.implication} className="line-clamp-2 text-sm font-semibold">
-                  {item.implication}
-                </li>
-              ))}
-            </ul>
-            <p className="text-xs text-ai">
-              AI-generated from NASA PSI records. Based on {cited.size} source-checked findings.
-            </p>
-          </>
+        {lead && (
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <h2 className="text-base font-semibold">Highest-ranked finding</h2>
+              <OutcomeChip outcome={lead.outcome} />
+            </div>
+            <p className="line-clamp-4 text-sm">{lead.finding}</p>
+            <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+              <a
+                href={investigations.get(lead.investigation_id)?.psi_url ?? lead.source_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                title={investigations.get(lead.investigation_id)?.name}
+                className="font-semibold text-accent hover:underline"
+              >
+                {investigationLabel(lead.investigation_id)}
+              </a>
+              <button
+                type="button"
+                onClick={() => onReveal(lead.id)}
+                className="num rounded border border-line bg-bg px-1.5 text-accent hover:bg-surface-2"
+              >
+                {lead.id}
+              </button>
+              <span className="num text-ink-2">score {lead.score.toFixed(2)}</span>
+              <a
+                href={lead.source_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-accent hover:underline"
+              >
+                Open source
+              </a>
+              <button
+                type="button"
+                onClick={() => onVerify(lead.id)}
+                className="rounded border border-line bg-bg px-2.5 py-1 font-semibold text-ink hover:bg-surface-2"
+              >
+                Verify
+              </button>
+            </div>
+          </div>
         )}
-      </Tile>
+      </section>
 
-      <article className="flex flex-col gap-3 rounded-lg border border-line bg-surface p-4">
-        <TileHeader title="Method and data" question="Can I check all of this?" />
-        <p className="text-base leading-snug font-semibold">
-          {ranked.length} source-checked findings from {investigationCount} NASA investigations,
-          ranked by a fixed formula.
-        </p>
-        <p className="num rounded border border-line bg-bg px-2 py-1.5 text-xs text-ink-2">
-          score = closeness × relevance × completeness
-        </p>
-        <p className="text-xs text-ink-2">
-          No AI takes part in the ranking, the coverage verdict or the map. Every finding links to
-          its source document.
-        </p>
-        <Link
-          href="/method"
-          className="mt-auto w-fit rounded-md border border-line bg-bg px-3 py-1.5 text-sm font-semibold hover:bg-surface-2"
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
+        <Tile
+          title="Coverage"
+          question="Where are the tests, and where are the gaps?"
+          action="Open the test map"
+          onOpen={() => onOpen("coverage")}
         >
+          <div className="flex items-start gap-3">
+            <MiniMap atmosphere={atmosphere} cells={cells} findings={ranked} />
+            <ul className="tnum flex min-w-0 flex-col gap-1.5 text-xs text-ink-2">
+              <ShareRow swatch="bg-ramp-1" label="Tested" value={share.tested} />
+              <ShareRow swatch="hatch-light" label="Thin" value={share.thin} />
+              <ShareRow swatch="hatch" label="Untested" value={share.untested} />
+              <li className="text-muted">of the mapped oxygen and pressure plane</li>
+            </ul>
+          </div>
+        </Tile>
+
+        <Tile
+          title="Evidence"
+          question="What happened in the closest tests?"
+          action={`Open all ${ranked.length} ranked findings`}
+          onOpen={() => onOpen("evidence")}
+        >
+          <OutcomeSummary top={top} compact />
+          <ol className="flex flex-col border-t border-line">
+            {ranked.slice(0, 3).map((f, index) => (
+              <li
+                key={f.id}
+                className="flex items-center gap-2 border-b border-line py-0.5 text-sm last:border-0"
+              >
+                <span className="num w-3 text-right text-xs text-muted">{index + 1}</span>
+                <span className="min-w-0 flex-1 truncate">
+                  <span className="font-semibold">{investigationLabel(f.investigation_id)}</span>{" "}
+                  <span className="text-ink-2">{f.fuel}</span>
+                </span>
+                <span title={OUTCOME_META[f.outcome].label}>
+                  <OutcomeIcon outcome={f.outcome} size={10} />
+                </span>
+                <span className="num text-xs text-ink-2">{f.score.toFixed(2)}</span>
+              </li>
+            ))}
+          </ol>
+        </Tile>
+
+        <Tile
+          title="Safety implications"
+          question="What does that evidence imply?"
+          action={cited.size >= 3 ? `Open ${valid.length} implications` : "Open implications"}
+          onOpen={() => onOpen("implications")}
+          ai
+        >
+          {!implications ? (
+            <p className="text-sm text-ink-2">
+              Written in advance for the two preset atmospheres. For a custom atmosphere, the
+              ranked evidence is the answer.
+            </p>
+          ) : cited.size < 3 ? (
+            <p className="text-sm text-ink-2">Insufficient evidence for implications.</p>
+          ) : (
+            <>
+              <ul className="flex flex-col gap-2">
+                {valid.slice(0, 2).map((item) => (
+                  <li key={item.implication} className="line-clamp-2 text-sm font-semibold">
+                    {item.implication}
+                  </li>
+                ))}
+              </ul>
+              <p className="text-xs text-ai">
+                AI-generated from NASA PSI records. Based on {cited.size} source-checked findings.
+              </p>
+            </>
+          )}
+        </Tile>
+      </div>
+
+      <p className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-lg border border-line bg-surface px-4 py-2.5 text-xs text-ink-2">
+        <span>
+          {ranked.length} source-checked findings from {investigations.size} NASA investigations,
+          ranked by
+        </span>
+        <span className="num rounded border border-line bg-bg px-2 py-0.5 text-ink">
+          score = closeness × relevance × completeness
+        </span>
+        <span>No AI takes part in the ranking, the coverage verdict or the map.</span>
+        <Link href="/method" className="font-semibold text-accent hover:underline">
           Open the method and sources
         </Link>
-      </article>
+      </p>
     </div>
   );
 }
 
-function TileHeader({ title, question }: { title: string; question: string }) {
+function ReadoutColumn({
+  readout,
+  active,
+  onSelect,
+}: {
+  readout: Readout;
+  active: boolean;
+  onSelect: () => void;
+}) {
+  const { coverage, top, atmosphere } = readout;
+  const { lead } = outcomeCounts(top);
   return (
-    <header className="flex flex-wrap items-baseline justify-between gap-x-3">
-      <h2 className="text-base font-semibold">{title}</h2>
-      <p className="text-xs text-ink-2">{question}</p>
-    </header>
+    <button
+      type="button"
+      aria-pressed={active}
+      onClick={onSelect}
+      className={`flex flex-1 flex-col items-start gap-1.5 rounded-md border p-3 text-left ${
+        active ? "border-accent bg-accent/5" : "border-line bg-bg hover:bg-surface-2"
+      }`}
+    >
+      <span className={`text-sm font-semibold ${active ? "text-accent" : "text-ink"}`}>
+        {readout.label}
+      </span>
+      <span className="tnum text-xs text-ink-2">
+        {fmtNum(atmosphere.oxygen_pct)} % O₂, {fmtNum(atmosphere.pressure_kpa)} kPa
+      </span>
+      <StatusPill status={coverage.status} />
+      <span className="text-xs text-ink">
+        {coverage.conditions === 0
+          ? "No findings within close range"
+          : `${coverage.findings.length} ${
+              coverage.findings.length === 1 ? "finding" : "findings"
+            } from ${coverage.conditions} test ${
+              coverage.conditions === 1 ? "condition" : "conditions"
+            } within close range`}
+      </span>
+      {lead && (
+        <span className="flex items-center gap-1.5 text-xs text-ink-2">
+          <OutcomeIcon outcome={lead.outcome} size={10} />
+          {OUTCOME_META[lead.outcome].label} in {lead.count} of {top.length} top-ranked
+        </span>
+      )}
+    </button>
+  );
+}
+
+function ShareRow({ swatch, label, value }: { swatch: string; label: string; value: number }) {
+  return (
+    <li className="flex items-center gap-2">
+      <span className={`${swatch} h-3 w-4 shrink-0 rounded-sm border border-line`} />
+      <span className="text-ink">{label}</span> {Math.round(value * 100)} %
+    </li>
   );
 }
 
@@ -169,7 +294,10 @@ function Tile({
         ai ? "border-l-2 border-l-ai" : ""
       }`}
     >
-      <TileHeader title={title} question={question} />
+      <header className="-mb-1">
+        <h2 className="text-base font-semibold">{title}</h2>
+        <p className="text-xs text-ink-2">{question}</p>
+      </header>
       {children}
       <button
         type="button"
@@ -182,7 +310,7 @@ function Tile({
   );
 }
 
-const SIZE = 132;
+const SIZE = 112;
 const O = DOMAIN.oxygen_pct;
 const P = DOMAIN.pressure_kpa;
 const mx = (o: number) => ((o - O.min) / (O.max - O.min)) * SIZE;

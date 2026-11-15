@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* Design tokens. FireSight has one theme: light, with frosted-glass panels.
+/* Design tokens. FlameSight by Skylize has one theme: light, with frosted-glass panels.
    Text, accent and outcome colours are dark enough to pass WCAG AA on glass. */
 @theme {
   --color-bg: #f3f6fb;

@@ -35,7 +35,7 @@ export default function AskBox() {
     >
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h2 className="text-base font-semibold">Ask about these findings</h2>
-        <p className="text-xs text-ai">AI-generated from NASA PSI records</p>
+        <p className="text-xs text-ai">AI-generated from this dataset&apos;s NASA records</p>
       </div>
       <div className="flex gap-2">
         <input

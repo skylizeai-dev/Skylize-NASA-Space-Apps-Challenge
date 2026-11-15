@@ -5,7 +5,7 @@ import type { Finding } from "@/lib/schema";
 const findings = findingsData as Finding[];
 
 const FALLBACK_ANSWER =
-  "The live Q&A is unavailable right now. Browse the ranked evidence cards above — every one links to its NASA PSI source.";
+  "The live Q&A is unavailable right now. Browse the ranked evidence cards above — every one links to its NASA source.";
 
 // Guardrail: this route only ever answers from the verified findings/investigations
 // JSON shipped in /data. It never invents a number or a citation. If no API key is

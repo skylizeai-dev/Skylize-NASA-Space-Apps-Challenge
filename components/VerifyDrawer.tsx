@@ -115,7 +115,7 @@ export default function VerifyDrawer({ finding, investigation, onClose }: Props)
               </p>
               <p className="text-ink-2">{investigation.objective}</p>
               <div className="border-l-2 border-ai pl-3">
-                <p className="text-xs text-ai">AI-generated from NASA PSI records</p>
+                <p className="text-xs text-ai">AI-generated from this dataset&apos;s NASA records</p>
                 <p className="text-ink-2">{investigation.ai_summary}</p>
               </div>
               <a

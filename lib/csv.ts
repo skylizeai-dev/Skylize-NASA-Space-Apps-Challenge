@@ -59,7 +59,7 @@ export function findingsToCsv(findings: ScoredFinding[]): string {
   return [HEADER.join(","), ...rows].join("\n");
 }
 
-export function downloadCsv(findings: ScoredFinding[], filename = "firesight-findings.csv") {
+export function downloadCsv(findings: ScoredFinding[], filename = "flamesight-findings.csv") {
   const blob = new Blob([findingsToCsv(findings)], { type: "text/csv;charset=utf-8" });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);

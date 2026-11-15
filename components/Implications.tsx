@@ -35,7 +35,7 @@ export default function Implications({ items, top, onCite }: Props) {
         <h3 className="text-base font-semibold">What the top-ranked evidence implies</h3>
         {cited.size >= 3 && (
           <p className="text-xs text-ai">
-            AI-generated from NASA PSI records. Based on {cited.size} source-checked findings.
+            AI-generated from this dataset&apos;s NASA records. Based on {cited.size} source-checked findings.
           </p>
         )}
       </div>

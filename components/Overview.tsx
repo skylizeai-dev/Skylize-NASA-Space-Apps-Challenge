@@ -209,7 +209,7 @@ export default function Overview({
             <>
               <p className="line-clamp-2 text-sm">{valid[0]?.implication}</p>
               <p className="text-xs text-ai">
-                AI-generated from {cited.size} source-checked NASA PSI findings.
+                AI-generated from {cited.size} source-checked NASA findings.
               </p>
             </>
           )}

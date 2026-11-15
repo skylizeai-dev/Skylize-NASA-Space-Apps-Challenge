@@ -65,7 +65,7 @@ export default function PrintReport({
         <section>
           <h2>Safety implications</h2>
           <p className="meta">
-            AI-generated from NASA PSI records, based on {citedCount} source-checked findings. The
+            AI-generated from this dataset&apos;s NASA records, based on {citedCount} source-checked findings. The
             ranking, the coverage verdict and the map use no AI.
           </p>
           <ul>

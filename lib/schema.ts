@@ -1,4 +1,4 @@
-// Types for FlameSight data — mirrors plan.md section 4.
+// Types for FlameSight by Skylize data — mirrors plan.md section 4.
 // A finding's numeric condition fields are `number | null`: null beats a guess.
 
 export type SafetyRelevance = 1 | 2 | 3;

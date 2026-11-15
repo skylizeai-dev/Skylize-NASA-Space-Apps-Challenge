@@ -264,7 +264,7 @@ export default function Dashboard() {
       <TopBar
         expert={view.expert}
         onExpert={(expert) => setView((v) => ({ ...v, expert }))}
-        onExportCsv={() => downloadCsv(filtered, `firesight-${atmosphereSlug}.csv`)}
+        onExportCsv={() => downloadCsv(filtered, `flamesight-${atmosphereSlug}.csv`)}
         onExportPdf={() => setPrintedAt(new Date().toLocaleString())}
       />
 
@@ -547,7 +547,8 @@ export default function Dashboard() {
         <p className="mx-auto w-full max-w-[1440px] px-4 py-1.5 text-xs text-muted">
           Evidence tool, not a source of design limits. Every finding links to
           its NASA source. Built for the NASA Space Apps Challenge 2026 by team
-          Skylize, and not affiliated with NASA.
+          Skylize, not affiliated with NASA. Code partly AI-assisted (Claude); no
+          AI-generated images.
         </p>
       </footer>
 

@@ -1,22 +1,23 @@
-# FireSight
+# FlameSight by Skylize
 
 NASA Space Apps Challenge 2026 — **Flame in Freefall: SI-Powered Fire Safety Insights from Microgravity Combustion Data**
 Team: Skylize
 
-FireSight turns NASA's microgravity combustion experiments into ranked, cited
+FlameSight by Skylize turns NASA's microgravity combustion experiments into ranked, cited
 fire-safety evidence for any spacecraft or habitat atmosphere. Pick an
 atmosphere (oxygen %, pressure, airflow) and see which NASA findings are most
-relevant, with every claim linked back to its source record.
+relevant, with every claim linked back to its source document.
 
 ## How it works
 
 1. Pick a habitat atmosphere — a preset or custom sliders.
-2. Verified findings from NASA PSI combustion investigations are ranked by how
+2. Source-checked findings from NASA microgravity combustion investigations are ranked by how
    closely their test conditions match, weighted by safety relevance and data
    completeness. The formula is shown in full at `/method` — nothing is a
    black box.
 3. Each result is an evidence card: what burned, under what conditions, what
-   happened, and a direct link to the NASA PSI record.
+   happened, and a direct link to its source (NASA technical report, NASA
+   investigation page or peer-reviewed paper).
 4. A chart and a data-gaps panel show which oxygen/pressure combinations have
    little or no evidence in this dataset.
 5. Safety implications for the two preset atmospheres are AI-written in advance
@@ -24,10 +25,23 @@ relevant, with every claim linked back to its source record.
 
 ## NASA data
 
-Source: [NASA Physical Sciences Informatics (PSI) repository](https://psi.nasa.gov/),
-combustion science investigations (BASS/BASS-II, SoFIE, FLEX/FLEX-2, ACME,
-SLICE, SPICE, CFI, SAME/SAME-R). See `data/investigations.json` for the
-specific investigations used and their PSI links.
+28 findings from 7 NASA microgravity combustion investigations (the combustion
+science investigations catalogued by NASA's Physical Sciences Informatics
+program), taken from NASA technical reports (NTRS), NASA investigation pages
+and peer-reviewed publications:
+
+| Investigation | Platform | Findings | Main source |
+|---|---|---|---|
+| BASS-II, Burning and Suppression of Solids-II | ISS, MSG, 2014–2016 | 6 | [NTRS 20210011385](https://ntrs.nasa.gov/citations/20210011385) |
+| Saffire I–VI, Spacecraft Fire Safety Demonstration | Uncrewed Cygnus, 2016–2023 | 10 | [NASA fact sheet](https://www.nasa.gov/wp-content/uploads/2025/07/spacecraft-fire-safety-demonstration-saffire.pdf), [NTRS 20240002981](https://ntrs.nasa.gov/citations/20240002981) |
+| SoFIE-MIST, Solid Fuel Ignition and Extinction – Material Ignition and Suppression Test | ISS, CIR, 2023–2025 | 3 | [NASA Science](https://science.nasa.gov/biological-physical/investigations/sofie-mist) |
+| FLEX, Flame Extinguishment Experiment | ISS, CIR, 2009–2012 | 3 | [doi:10.1007/s12217-014-9372-2](https://doi.org/10.1007/s12217-014-9372-2) |
+| ACME-BRE, Burning Rate Emulator | ISS, CIR, 2019–2021 | 4 | [NASA Science](https://science.nasa.gov/biological-physical/investigations/bre/), [doi:10.1016/j.combustflame.2021.01.035](https://doi.org/10.1016/j.combustflame.2021.01.035) |
+| CFI-G, Cool Flames Investigation with Gases | ISS, CIR, 2021 | 1 | [NASA](https://www.nasa.gov/mission_pages/station/research/news/Cool_Flames_First_for_ISS) |
+| SLICE, Structure and Liftoff in Combustion Experiment | ISS, MSG, 2012 | 1 | [NTRS 20150002322](https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20150002322.pdf) |
+
+Every publication and the exact source location for each finding are in
+`data/investigations.json` and `data/findings.json`, and on the `/method` page.
 
 **Data integrity rules:**
 - A missing value is shown as "not reported" — never guessed or interpolated.
@@ -38,12 +52,21 @@ specific investigations used and their PSI links.
 
 ## AI use and disclosure
 
-This project was built with AI assistance (Claude), including code scaffolding
-and drafting of investigation summaries, which a human reviewed before
-publishing. In the running app:
+**This repository contains AI-generated code.** We used Claude (Anthropic) as a
+coding assistant to scaffold and write parts of the Next.js app, the ranking and
+coverage functions and the 3D cabin components; the team reviewed, tested and
+deployed it. Claude also helped draft finding rows from NASA documents (each
+value then checked against its cited source) and the investigation summaries.
 
-- Investigation summaries and the "Ask the data" Q&A feature are AI-generated
-  and labeled as such in the UI.
+**No AI-generated images.** Every visual (flame illustration, 3D cabin and
+habitat, chart, icon) is drawn in code. Any AI-generated image added later must
+carry a visible watermark. No NASA logos, insignia or mission patches are used,
+and no people are shown.
+
+In the running app:
+
+- Investigation summaries, the preset safety implications and the "Ask the
+  data" Q&A feature are AI-generated and labeled as such in the UI.
 - The AI layer answers only from the verified findings/investigations JSON in
   `/data` — it does not draw on outside knowledge, and says "not in the
   dataset" when the records don't cover a question. See `app/api/ask/route.ts`.
@@ -85,7 +108,7 @@ The top bar has **Export CSV** and **Export PDF**.
 
 - **CSV** (`lib/csv.ts`) downloads the ranked findings currently shown, with
   the score breakdown, the review flags and the source URL for every row. The
-  filename carries the atmosphere, e.g. `firesight-34pct-o2-56.5kpa.csv`.
+  filename carries the atmosphere, e.g. `flamesight-34pct-o2-56.5kpa.csv`.
 - **PDF** renders `components/PrintReport.tsx` and opens the browser's print
   dialog, where "Save as PDF" writes the file. The report is built for paper:
   coverage verdict, safety implications with their finding ids, every ranked
@@ -140,5 +163,8 @@ Open [http://localhost:3000](http://localhost:3000).
 ## What this tool is not
 
 Not a combustion simulator or predictive model. Not a certified safety tool or
-a source of design limits. Not a replacement for the PSI repository — a way
-into it.
+a source of design limits. Not a replacement for NASA's source documents — a way
+into them.
+
+*FlameSight by Skylize was built for the NASA Space Apps Challenge 2026 and is
+not affiliated with or endorsed by NASA.*

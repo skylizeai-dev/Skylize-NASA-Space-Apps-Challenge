@@ -145,7 +145,7 @@ score        ${scored.score.toFixed(3)}`}
             </li>
             <li>
               AI-written text is marked with a violet border and the label &ldquo;AI-generated
-              from NASA PSI records&rdquo;.
+              from this dataset&apos;s NASA records&rdquo;.
             </li>
             <li>
               Each implication cites finding ids. One that cites a finding outside the ranked
@@ -155,6 +155,11 @@ score        ${scored.score.toFixed(3)}`}
             <li>
               The ranking, the coverage verdict, the chart and the gaps use no AI. With every
               language model switched off they are unchanged.
+            </li>
+            <li>
+              Parts of this app&apos;s code were written with an AI coding assistant (Claude,
+              Anthropic) and reviewed by the team. No AI-generated images are used: every visual is
+              drawn in code.
             </li>
           </ul>
         </Section>

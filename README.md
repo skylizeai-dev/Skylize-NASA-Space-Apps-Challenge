@@ -65,13 +65,12 @@ and no people are shown.
 
 In the running app:
 
-- Investigation summaries, the preset safety implications and the "Ask the
-  data" Q&A feature are AI-generated and labeled as such in the UI.
-- The AI layer answers only from the verified findings/investigations JSON in
-  `/data` — it does not draw on outside knowledge, and says "not in the
-  dataset" when the records don't cover a question. See `app/api/ask/route.ts`.
-- If the live Q&A API is unavailable, the UI falls back to a plain message
-  pointing back to the ranked evidence cards, rather than failing silently.
+- Investigation summaries and the preset safety implications are AI-generated
+  and labeled "AI-generated from this dataset's NASA records" in the UI.
+- An optional "Ask the data" Q&A box exists in code (`components/AskBox.tsx`,
+  `app/api/ask/route.ts`) but is **off in the public build**. It turns on only
+  when `NEXT_PUBLIC_ASK_ENABLED=1` and `LLM_API_KEY` are set. When on, it
+  answers only from the JSON in `/data` and says "not in the dataset" otherwise.
 
 ## Stack
 
@@ -104,17 +103,11 @@ near-opaque white.
 
 ## Export
 
-The top bar has **Export CSV** and **Export PDF**.
+The top bar has **Export CSV**.
 
 - **CSV** (`lib/csv.ts`) downloads the ranked findings currently shown, with
   the score breakdown, the review flags and the source URL for every row. The
   filename carries the atmosphere, e.g. `flamesight-34pct-o2-56.5kpa.csv`.
-- **PDF** renders `components/PrintReport.tsx` and opens the browser's print
-  dialog, where "Save as PDF" writes the file. The report is built for paper:
-  coverage verdict, safety implications with their finding ids, every ranked
-  finding with its conditions, score breakdown and full source URL, the
-  method, and the NASA investigations used. The screen app is hidden in print
-  (`@media print` in `app/globals.css`).
 
 ## Coverage rule
 

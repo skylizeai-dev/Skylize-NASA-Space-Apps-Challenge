@@ -265,7 +265,6 @@ export default function Dashboard() {
         expert={view.expert}
         onExpert={(expert) => setView((v) => ({ ...v, expert }))}
         onExportCsv={() => downloadCsv(filtered, `flamesight-${atmosphereSlug}.csv`)}
-        onExportPdf={() => setPrintedAt(new Date().toLocaleString())}
       />
 
       {panel === "setup" ? (

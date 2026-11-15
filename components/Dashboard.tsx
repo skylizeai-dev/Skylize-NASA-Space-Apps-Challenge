@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { MotionConfig, motion } from "motion/react";
@@ -9,17 +9,21 @@ import AskBox from "./AskBox";
 import AtmosphereSelector from "./AtmosphereSelector";
 import ConditionsChart from "./ConditionsChart";
 import EvidenceCard from "./EvidenceCard";
-import EvidenceTable, { downloadCsv } from "./EvidenceTable";
+import EvidenceTable from "./EvidenceTable";
 import FlameIllustration from "./FlameIllustration";
 import GapsPanel from "./GapsPanel";
-import Implications, { type Implication } from "./Implications";
+import Implications, { validImplications, type Implication } from "./Implications";
 import Overview, { type Readout } from "./Overview";
+import PrintReport from "./PrintReport";
 import SetupWizard from "./SetupWizard";
 import TopBar from "./TopBar";
 import VerifyDrawer from "./VerifyDrawer";
 import { buildCoverageGrid, coverageAt, nearestTested } from "@/lib/coverage";
+import { downloadCsv } from "@/lib/csv";
 import {
+  FLOW_LABEL,
   FUEL_GROUP_LABEL,
+  fmtNum,
   fuelGroup,
   investigationLabel,
   type FuelGroup,
@@ -89,6 +93,8 @@ export default function Dashboard() {
   const [layout, setLayout] = useState<"cards" | "table">("cards");
   const [verifyId, setVerifyId] = useState<string | null>(null);
   const [revealId, setRevealId] = useState<string | null>(null);
+  const [printedAt, setPrintedAt] = useState<string | null>(null);
+  const printedRef = useRef<string | null>(null);
 
   // Mirror state into the URL. Debounced, because browsers throttle history writes.
   useEffect(() => {
@@ -224,15 +230,46 @@ export default function Dashboard() {
 
   const verifyFinding = ranked.find((f) => f.id === verifyId) ?? null;
 
+  // PDF: the browser prints a report built for paper (PrintReport), not the
+  // screen. Rendering it first, then printing, keeps it out of the way on screen.
+  useEffect(() => {
+    if (!printedAt || printedRef.current === printedAt) return;
+    printedRef.current = printedAt;
+    const done = () => setPrintedAt(null);
+    window.addEventListener("afterprint", done);
+    const frame = requestAnimationFrame(() => window.print());
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("afterprint", done);
+    };
+  }, [printedAt]);
+
+  const filterNote = [
+    view.fuel === "any" ? null : FUEL_GROUP_LABEL[view.fuel],
+    view.burning ? "spread or sustained burning only" : null,
+    view.expert && view.direction !== "any" ? `${FLOW_LABEL[view.direction]} flow` : null,
+  ]
+    .filter(Boolean)
+    .join(", ") || null;
+
+  const atmosphereSlug = `${fmtNum(atmosphere.oxygen_pct)}pct-o2-${fmtNum(
+    atmosphere.pressure_kpa
+  )}kpa`;
+  const presetLabel =
+    presets.find((p) => p.id === activePreset)?.label ?? "Custom atmosphere";
+  const printImplications = validImplications(implications[activePreset], top);
+
   return (
     <MotionConfig reducedMotion="user">
       <TopBar
         expert={view.expert}
         onExpert={(expert) => setView((v) => ({ ...v, expert }))}
+        onExportCsv={() => downloadCsv(filtered, `firesight-${atmosphereSlug}.csv`)}
+        onExportPdf={() => setPrintedAt(new Date().toLocaleString())}
       />
 
       {panel === "setup" ? (
-        <main className="mx-auto w-full max-w-[1800px] flex-1 px-4 pt-3 pb-4">
+        <main className="mx-auto w-full max-w-[1800px] flex-1 px-4 pt-3 pb-4 print:hidden">
           <SetupWizard
             presets={presets}
             atmosphere={atmosphere}
@@ -246,7 +283,7 @@ export default function Dashboard() {
           />
         </main>
       ) : (
-        <main className="mx-auto grid w-full max-w-[1440px] flex-1 grid-cols-1 gap-4 px-4 pt-2 pb-3 md:grid-cols-[288px_minmax(0,1fr)] xl:grid-cols-[304px_minmax(0,1fr)]">
+        <main className="mx-auto grid w-full max-w-[1440px] flex-1 grid-cols-1 gap-4 px-4 pt-2 pb-3 print:hidden md:grid-cols-[288px_minmax(0,1fr)] xl:grid-cols-[304px_minmax(0,1fr)]">
           <div className="flex flex-col gap-2 md:sticky md:top-[60px] md:self-start">
             <button
               type="button"
@@ -431,13 +468,6 @@ export default function Dashboard() {
                           </button>
                         ))}
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => downloadCsv(filtered)}
-                        className="text-accent hover:underline"
-                      >
-                        Download CSV
-                      </button>
                     </div>
                   )}
                 </div>
@@ -513,13 +543,29 @@ export default function Dashboard() {
         </main>
       )}
 
-      <footer className="border-t border-line">
+      <footer className="border-t border-line print:hidden">
         <p className="mx-auto w-full max-w-[1440px] px-4 py-1.5 text-xs text-muted">
           Evidence tool, not a source of design limits. Every finding links to
           its NASA source. Built for the NASA Space Apps Challenge 2026 by team
           Skylize, and not affiliated with NASA.
         </p>
       </footer>
+
+      {printedAt && (
+        <PrintReport
+          atmosphere={atmosphere}
+          presetLabel={presetLabel}
+          coverage={coverage}
+          top={top}
+          findings={filtered}
+          filterNote={filterNote}
+          implications={printImplications.valid}
+          citedCount={printImplications.cited.size}
+          investigations={investigationById}
+          printedAt={printedAt}
+          url={typeof window === "undefined" ? "" : window.location.href}
+        />
+      )}
 
       <VerifyDrawer
         finding={verifyFinding}

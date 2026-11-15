@@ -7,6 +7,9 @@ import { APP_NAME } from "@/lib/config";
 interface Props {
   expert?: boolean;
   onExpert?: (expert: boolean) => void;
+  // Export the view the reader is looking at. Absent on pages with no data.
+  onExportCsv?: () => void;
+  onExportPdf?: () => void;
 }
 
 // The mark is a microgravity flame: round and blue, because without buoyancy
@@ -24,7 +27,7 @@ export function FlameMark() {
   );
 }
 
-export default function TopBar({ expert, onExpert }: Props) {
+export default function TopBar({ expert, onExpert, onExportCsv, onExportPdf }: Props) {
   const [copied, setCopied] = useState(false);
 
   async function copyLink() {
@@ -38,7 +41,7 @@ export default function TopBar({ expert, onExpert }: Props) {
   }
 
   return (
-    <header className="topbar sticky top-0 z-20 border-b border-line bg-bg/95 backdrop-blur">
+    <header className="topbar sticky top-0 z-20 border-b border-line bg-bg/95 backdrop-blur print:hidden">
       <div className="mx-auto flex w-full max-w-[1440px] flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2.5">
         <Link href="/" className="flex items-center gap-2 text-base font-semibold">
           <FlameMark />
@@ -73,6 +76,31 @@ export default function TopBar({ expert, onExpert }: Props) {
             <button type="button" onClick={copyLink} className="text-ink-2 hover:text-ink">
               <span aria-live="polite">{copied ? "Link copied" : "Copy link"}</span>
             </button>
+          )}
+          {(onExportCsv || onExportPdf) && (
+            <div role="group" aria-label="Export" className="flex items-center gap-1 text-xs">
+              <span className="text-ink-2">Export</span>
+              {onExportCsv && (
+                <button
+                  type="button"
+                  onClick={onExportCsv}
+                  aria-label="Download the ranked findings as a CSV file"
+                  className="rounded border border-line px-2 py-0.5 font-semibold text-ink-2 hover:text-ink"
+                >
+                  CSV
+                </button>
+              )}
+              {onExportPdf && (
+                <button
+                  type="button"
+                  onClick={onExportPdf}
+                  aria-label="Download a PDF report of this atmosphere"
+                  className="rounded border border-line px-2 py-0.5 font-semibold text-ink-2 hover:text-ink"
+                >
+                  PDF
+                </button>
+              )}
+            </div>
           )}
           <Link href="/method" className="text-ink-2 hover:text-ink">
             Method

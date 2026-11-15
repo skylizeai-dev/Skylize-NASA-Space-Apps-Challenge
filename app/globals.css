@@ -324,3 +324,110 @@ input[type="range"]::-moz-range-thumb {
     --color-surface: rgb(255 255 255 / 0.92);
   }
 }
+
+/* ------------------------------------------------------------------
+   Print and "Save as PDF". The screen app is hidden and PrintReport is
+   shown instead: a plain, paper-sized report with every source URL
+   written out, since a printed page has no links.
+   ------------------------------------------------------------------ */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    color: #000;
+  }
+  body::before {
+    display: none !important;
+  }
+
+  .print-report {
+    display: block !important;
+    color: #000;
+    font-size: 9.5pt;
+    line-height: 1.4;
+  }
+  .print-report h1 {
+    margin: 0 0 1mm;
+    font-size: 15pt;
+    line-height: 1.2;
+  }
+  .print-report h2 {
+    margin: 6mm 0 1.5mm;
+    border-bottom: 0.3mm solid #999;
+    padding-bottom: 0.8mm;
+    font-size: 11pt;
+  }
+  .print-report p {
+    margin: 0 0 1.5mm;
+  }
+  .print-report .meta {
+    color: #444;
+    font-size: 8pt;
+  }
+  .print-report ul {
+    margin: 0 0 2mm;
+    padding-left: 5mm;
+  }
+  .print-report li {
+    margin-bottom: 1.5mm;
+    break-inside: avoid;
+  }
+  .print-report table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+  }
+  /* Fixed widths so the score column cannot be pushed off the page, and long
+     source URLs wrap instead of stretching the row. */
+  .print-report col.c-rank {
+    width: 6mm;
+  }
+  .print-report col.c-fuel {
+    width: 24mm;
+  }
+  .print-report col.c-num {
+    width: 9mm;
+  }
+  .print-report col.c-outcome {
+    width: 17mm;
+  }
+  .print-report col.c-score {
+    width: 11mm;
+  }
+  .print-report td,
+  .print-report th {
+    overflow-wrap: anywhere;
+  }
+  .print-report th,
+  .print-report td {
+    border-bottom: 0.2mm solid #bbb;
+    padding: 1.2mm 1.5mm 1.2mm 0;
+    text-align: left;
+    vertical-align: top;
+  }
+  .print-report th {
+    border-bottom-width: 0.4mm;
+    font-size: 8pt;
+    text-transform: none;
+  }
+  .print-report thead {
+    display: table-header-group;
+  }
+  .print-report tr {
+    break-inside: avoid;
+  }
+  .print-report header,
+  .print-report footer {
+    break-inside: avoid;
+  }
+  .print-report footer {
+    margin-top: 5mm;
+    border-top: 0.3mm solid #999;
+    padding-top: 1.5mm;
+  }
+}

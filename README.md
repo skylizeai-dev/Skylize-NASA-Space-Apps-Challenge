@@ -79,6 +79,20 @@ One light theme with frosted-glass panels. Every colour is a token in
 on glass. Where `backdrop-filter` is unsupported, panels fall back to
 near-opaque white.
 
+## Export
+
+The top bar has **Export CSV** and **Export PDF**.
+
+- **CSV** (`lib/csv.ts`) downloads the ranked findings currently shown, with
+  the score breakdown, the review flags and the source URL for every row. The
+  filename carries the atmosphere, e.g. `firesight-34pct-o2-56.5kpa.csv`.
+- **PDF** renders `components/PrintReport.tsx` and opens the browser's print
+  dialog, where "Save as PDF" writes the file. The report is built for paper:
+  coverage verdict, safety implications with their finding ids, every ranked
+  finding with its conditions, score breakdown and full source URL, the
+  method, and the NASA investigations used. The screen app is hidden in print
+  (`@media print` in `app/globals.css`).
+
 ## Coverage rule
 
 A point on the oxygen x pressure plane is **tested** when 3 or more distinct

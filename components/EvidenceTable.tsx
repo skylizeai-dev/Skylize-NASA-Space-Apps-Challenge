@@ -14,35 +14,6 @@ const COLUMNS: { key: SortKey; label: string }[] = [
   { key: "flow_cm_s", label: "cm/s" },
 ];
 
-function csvCell(value: string | number | null): string {
-  if (value === null) return "not reported";
-  const text = String(value);
-  return /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
-}
-
-export function downloadCsv(findings: ScoredFinding[]) {
-  const header = [
-    "rank", "id", "investigation", "fuel", "fuel_form", "oxygen_pct", "pressure_kpa",
-    "flow_cm_s", "flow_direction", "outcome", "score", "closeness", "completeness",
-    "finding", "source_url", "source_location",
-  ];
-  const rows = findings.map((f, i) =>
-    [
-      i + 1, f.id, f.investigation_id, f.fuel, f.fuel_form, f.oxygen_pct, f.pressure_kpa,
-      f.flow_cm_s, f.flow_direction, f.outcome, f.score.toFixed(3), f.closeness.toFixed(3),
-      f.completeness.toFixed(3), f.finding, f.source_url, f.source_quote_location,
-    ]
-      .map(csvCell)
-      .join(",")
-  );
-  const blob = new Blob([[header.join(","), ...rows].join("\n")], { type: "text/csv" });
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
-  link.download = "firesight-findings.csv";
-  link.click();
-  URL.revokeObjectURL(link.href);
-}
-
 export default function EvidenceTable({
   findings,
   onVerify,

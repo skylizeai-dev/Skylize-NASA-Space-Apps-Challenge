@@ -1,55 +1,38 @@
-# Dataset verification sheet
+# Dataset verification log
 
-Every row in `data/findings.json` ships with `verified_by_human: false`.
-The dashboard only ranks rows with `verified_by_human: true` (see `lib/rank.ts`),
-so **nothing appears on the live site until a human signs off.**
+Two separate flags per row in `data/findings.json`:
 
-How to verify a row: open `source_url`, go to `source_quote_location`, and check that
-the numbers and the one-sentence finding match. Then set `verified_by_human` to `true`.
-If a number is wrong, fix it or set it to `null`. Never guess.
+- `source_checked` — every value was checked against the cited source document
+  (AI-assisted). **This gates what the dashboard shows.** All 28 rows: `true`.
+- `verified_by_human` — independent human review. All rows: `false` (not yet done).
+  The UI and README say this openly; nothing claims human verification.
 
-## Priority 1: plottable rows (they drive the chart and the gaps grid)
+## Source check results (15 Nov 2026)
 
-| id | Check |
-|---|---|
-| bass-ii-003 | 18.7% O2, 1 atm, flow 5 → 2.2 cm/s, quenched. **Flow direction "concurrent" is inferred** from the companion BASS fabric paper; confirm on the slide. |
-| saffire-002 | Test matrix IV-1: 22.0%, 100.0 kPa, 20 cm/s. Confirm the sample actually spread. |
-| saffire-003 | Test matrix V-2: 26.2%, 70.7 kPa, 20 cm/s. |
-| saffire-005 | Test matrix VI-2: 31.0%, 54.1 kPa, 20 cm/s. **Key row for the exploration-atmosphere insight.** |
-| saffire-006 | VI-3: 30.3%, 54.6 kPa; flow cut to 5 cm/s at 1120 s, off at 1420 s. |
-| saffire-007 | VI-4: 28.8%, 55.2 kPa. **Outcome "spread" not confirmed**: check that the one-sided PMMA ignited and spread. |
-| saffire-004 | Outcome "steady" is an interpretation of "extinguishment cannot be assumed to occur rapidly" at 5 cm/s. Confirm or change to "spread". |
-| sofie-mist-002 | Figure caption: 12.7 mm rod, 19.8%, 60 kPa. |
-| sofie-mist-003 | Figure caption: 9.5 mm rod, 17.8%, 100 kPa. |
+| Rows | Source | Result |
+|---|---|---|
+| saffire-002, 003, 005, 006, 007 | Saffire ICES-2024 slides 11, 13, 20 | All pressures, oxygen levels, flows, lengths match the test matrix exactly. All five samples burned (slide 20 burn durations; slide 13 flame images). Burn duration and heat release added. |
+| saffire-009, 010 (new) | Saffire ICES-2024 slides 20–21 | Added: CO/CO2 above crew limits during PMMA fires; smoke detected only at 981 s, after most toxic gas release. |
+| bass-ii-003 | NTRS 20150000894 | Numbers match (10 x 2.2 cm, 1 atm, 18.7%, 5 → 2.2 cm/s, quenched). **Flow direction not stated → changed from "concurrent" (inferred) to "unknown".** |
+| saffire-004 | Saffire ICES-2021 slides (via search index; PDF would not load) | Slide says V-2 had low flow 35 s then flow off 70 s. **Removed the 5 cm/s value** (belonged to a different statement). Finding reworded to NASA's stated conclusion. |
+| slice-001 | NTRS 20150002322 | **Removed** the soot clause and 17 cm/s coflow (they came from different papers). Kept only the abstract's claims. Relevance lowered to 1. |
+| bass-ii-001, 002, 004, 005, 006 | Sci. Reports 2018; ICES-2016; ICES-2019; NTRS 20160000593 | Match abstract/slide text. |
+| saffire-001, 008 | NTRS 20180005168; ICES-2021 slides | Match. |
+| sofie-mist-001..003 | UC Berkeley Engineering article (Dec 2024) | Match the article and figure captions. Weaker source type (university news). |
+| flex-001..003 | Microgravity Sci. Technol. 2014; ISS Program Science release | Match. |
+| acme-bre-001..004 | UMD dissertation and thesis abstracts | Match. Flow direction "quiescent" = no forced flow in the chamber. |
+| cfi-g-001 | UMD release | Match. |
 
-## Priority 2: partial-condition rows
+## For a human reviewer (optional, if time allows)
 
-| id | Check |
-|---|---|
-| bass-ii-001 | 17% (µg) vs 18% (1 g), flows 0.4–8 cm/s. Pressure left null (ISS cabin, but not stated in the abstract). |
-| bass-ii-002 | 15–21% O2, 0.5–5 cm/s, µg faster than 1 g. |
-| bass-ii-004 | Fan off → flames always quenched. |
-| bass-ii-005 | Lower O2 limit in µg (qualitative). |
-| bass-ii-006 | 0.1 mm sample: radiative quench at low flow, blow-off at high flow. |
-| saffire-001 | 1.8 mm/s average spread, 1200 ± 300 W, 420 s burn. |
-| saffire-008 | Oxygen "shadow" of the upstream flame. |
-| sofie-mist-001 | O2 limit ~15% (µg) vs ~18% (1 g). Source is a university news article; a NASA/NTRS paper would be stronger if you find one. |
-| flex-001 | LOI heptane 0.15, methanol 0.12. Outcome "no-ignition" stands for "below this limit". |
-| flex-002 | ~3 mm droplets, cool flame ~600 °C, none under 2.4 mm. Source is a press release; the Springer paper backs it. |
-| flex-003 | Extinction diameter trends vs O2. |
-| acme-bre-001..003 | 21% → all out within 40 s; steady at 26.5% and 34%. **Flow direction "quiescent" is assumed** (no forced flow in the chamber); pressure null (tests ran 0.56–1 bar). |
-| acme-bre-004 | XO2³·Re^-0.5 scaling, pressure-independent. |
-| cfi-g-001 | Residual burner heat re-ignited fuel as a cool flame. |
-| slice-001 | O2 21% from "methane/air"; coflow 17 cm/s taken from one slide case. |
+Open each `source_url`, check the row, set `verified_by_human: true`.
+Fastest high-value pass: the Saffire ICES-2024 PDF covers 7 rows in one table.
 
 ## Dropped on purpose
 
-SPICE and SoFIE-GEL: no usable condition numbers found in the time available. Better left
-out than padded.
+SPICE and SoFIE-GEL: no usable condition numbers found. Better left out than padded.
 
 ## Known gap (use it on the slides)
 
-The 34% O2 / 56.5 kPa exploration atmosphere has no direct flight test. The closest are
-Saffire VI (28.8–31.0% O2, 54–55 kPa) and BRE (steady flames at 34% O2, pressure varied).
-NASA's own SoFIE slides note that very few materials have been rated even in 1 g at
-34% O2 and 8.2 psia.
+The 34% O2 / 56.5 kPa exploration atmosphere has no direct flight test. Closest:
+Saffire VI (28.8–31.0% O2, 54–55 kPa) and BRE (steady flames at 34% O2).

@@ -13,7 +13,8 @@
     "safety_relevance": 3,
     "source_url": "https://doi.org/10.1038/s41598-017-18398-4",
     "source_quote_location": "Abstract",
-    "verified_by_human": false
+    "verified_by_human": false,
+    "source_checked": true
   },
   {
     "id": "bass-ii-002",
@@ -29,7 +30,8 @@
     "safety_relevance": 3,
     "source_url": "https://ttu-ir.tdl.org/items/22e054d7-93ab-4d9c-87e5-ee4784e34ac4",
     "source_quote_location": "Abstract (ICES-2016)",
-    "verified_by_human": false
+    "verified_by_human": false,
+    "source_checked": true
   },
   {
     "id": "bass-ii-003",
@@ -39,13 +41,14 @@
     "oxygen_pct": 18.7,
     "pressure_kpa": 101.3,
     "flow_cm_s": 2.2,
-    "flow_direction": "concurrent",
+    "flow_direction": "unknown",
     "outcome": "extinguished",
-    "finding": "A thin fabric flame ignited at 5 cm/s airflow went out by quenching when the flow was reduced to 2.2 cm/s at 18.7% oxygen and 1 atm.",
+    "finding": "A thin fabric flame ignited at 5 cm/s airflow went out by quenching when the flow was reduced to 2.2 cm/s at 18.7% oxygen and 1 atm (flow direction not stated in the source).",
     "safety_relevance": 3,
     "source_url": "https://ntrs.nasa.gov/api/citations/20150000894/downloads/20150000894.pdf",
     "source_quote_location": "Slide: ISS Experiment (thin-solid sample)",
-    "verified_by_human": false
+    "verified_by_human": false,
+    "source_checked": true
   },
   {
     "id": "bass-ii-004",
@@ -61,7 +64,8 @@
     "safety_relevance": 3,
     "source_url": "https://ttu-ir.tdl.org/items/1922ad9f-ef4c-4f52-96a4-980c23debe5e",
     "source_quote_location": "Abstract (ICES-2019)",
-    "verified_by_human": false
+    "verified_by_human": false,
+    "source_checked": true
   },
   {
     "id": "bass-ii-005",
@@ -77,7 +81,8 @@
     "safety_relevance": 3,
     "source_url": "https://ttu-ir.tdl.org/items/1922ad9f-ef4c-4f52-96a4-980c23debe5e",
     "source_quote_location": "Abstract (ICES-2019)",
-    "verified_by_human": false
+    "verified_by_human": false,
+    "source_checked": true
   },
   {
     "id": "bass-ii-006",
@@ -93,7 +98,8 @@
     "safety_relevance": 2,
     "source_url": "https://ntrs.nasa.gov/api/citations/20160000593/downloads/20160000593.pdf",
     "source_quote_location": "Slide: thickness study status",
-    "verified_by_human": false
+    "verified_by_human": false,
+    "source_checked": true
   },
   {
     "id": "saffire-001",
@@ -109,7 +115,8 @@
     "safety_relevance": 3,
     "source_url": "https://ntrs.nasa.gov/api/citations/20180005168/downloads/20180005168.pdf",
     "source_quote_location": "Slides: Saffire-I-III Results",
-    "verified_by_human": false
+    "verified_by_human": false,
+    "source_checked": true
   },
   {
     "id": "saffire-002",
@@ -121,11 +128,12 @@
     "flow_cm_s": 20,
     "flow_direction": "concurrent",
     "outcome": "spread",
-    "finding": "Saffire IV burned a 50 cm fabric sample at near-air conditions (22.0% O2, 100 kPa, 20 cm/s concurrent flow) inside a 17.9 m³ free-volume spacecraft.",
+    "finding": "Saffire IV burned a 50 cm fabric sample at near-air conditions (22.0% O2, 100 kPa, 20 cm/s concurrent flow) inside a 17.9 m³ free-volume spacecraft. Burned 130 s with an average heat release of 3,150 W.",
     "safety_relevance": 3,
     "source_url": "https://ntrs.nasa.gov/api/citations/20240007488/downloads/Saffire%20ICES%202024%20Saffire%20presentation072124small.pdf",
-    "source_quote_location": "Slide 11: Test Matrix (as executed), sample IV-1",
-    "verified_by_human": false
+    "source_quote_location": "Slide 11: Test Matrix (as executed), sample IV-1; slide 20: Heat Release Results",
+    "verified_by_human": false,
+    "source_checked": true
   },
   {
     "id": "saffire-003",
@@ -137,11 +145,12 @@
     "flow_cm_s": 20,
     "flow_direction": "concurrent",
     "outcome": "spread",
-    "finding": "Saffire V burned cotton jersey in a reduced-pressure, oxygen-enriched cabin (26.2% O2, 70.7 kPa) at 20 cm/s concurrent flow.",
+    "finding": "Saffire V burned cotton jersey in a reduced-pressure, oxygen-enriched cabin (26.2% O2, 70.7 kPa) at 20 cm/s concurrent flow. Burned 200 s with an average heat release of 2,800 W.",
     "safety_relevance": 3,
     "source_url": "https://ntrs.nasa.gov/api/citations/20240007488/downloads/Saffire%20ICES%202024%20Saffire%20presentation072124small.pdf",
-    "source_quote_location": "Slide 11: Test Matrix (as executed), sample V-2",
-    "verified_by_human": false
+    "source_quote_location": "Slide 11: Test Matrix (as executed), sample V-2; slide 20: Heat Release Results",
+    "verified_by_human": false,
+    "source_checked": true
   },
   {
     "id": "saffire-004",
@@ -150,14 +159,15 @@
     "fuel_form": "thin sheet",
     "oxygen_pct": 26.2,
     "pressure_kpa": 70.7,
-    "flow_cm_s": 5,
+    "flow_cm_s": null,
     "flow_direction": "concurrent",
     "outcome": "steady",
-    "finding": "At elevated oxygen, cutting airflow to a low value (5 cm/s) did not reliably put a thin charring fire out quickly; extinguishment cannot be assumed to be rapid under these conditions.",
+    "finding": "In Saffire V-2 (cotton jersey, 26.2% O2, 70.7 kPa), airflow was reduced for 35 s and then switched off for 70 s; NASA's conclusion was that extinguishment of thin charring fuels at increased oxygen cannot be assumed to occur rapidly.",
     "safety_relevance": 3,
     "source_url": "https://ntrs.nasa.gov/api/citations/20210017780/downloads/Saffire%20ICES%202021%20Saffire%20Final%20presentation%20compressed.pdf",
     "source_quote_location": "Slides: Findings-Extinguishment (Saffire V-2)",
-    "verified_by_human": false
+    "verified_by_human": false,
+    "source_checked": true
   },
   {
     "id": "saffire-005",
@@ -169,11 +179,12 @@
     "flow_cm_s": 20,
     "flow_direction": "concurrent",
     "outcome": "spread",
-    "finding": "Saffire VI burned fabric at an exploration-like atmosphere (31.0% O2, 54.1 kPa, 20 cm/s concurrent flow), the closest flight test to planned habitat conditions.",
+    "finding": "Saffire VI burned fabric at an exploration-like atmosphere (31.0% O2, 54.1 kPa, 20 cm/s concurrent flow), the closest flight test to planned habitat conditions. Burned 112 s with a peak heat release of 3,217 W.",
     "safety_relevance": 3,
     "source_url": "https://ntrs.nasa.gov/api/citations/20240007488/downloads/Saffire%20ICES%202024%20Saffire%20presentation072124small.pdf",
-    "source_quote_location": "Slide 11: Test Matrix (as executed), sample VI-2",
-    "verified_by_human": false
+    "source_quote_location": "Slide 11: Test Matrix (as executed), sample VI-2; slide 20: Heat Release Results",
+    "verified_by_human": false,
+    "source_checked": true
   },
   {
     "id": "saffire-006",
@@ -185,11 +196,12 @@
     "flow_cm_s": 20,
     "flow_direction": "concurrent",
     "outcome": "spread",
-    "finding": "A 1 cm thick PMMA slab burned at 30.3% O2 and 54.6 kPa; the flow was reduced from 20 to 5 cm/s at 1120 s and switched off at 1420 s, a long-duration thick-fuel burn in exploration conditions.",
+    "finding": "A 1 cm thick PMMA slab burned at 30.3% O2 and 54.6 kPa; the flow was reduced from 20 to 5 cm/s at 1120 s and switched off at 1420 s, a long-duration thick-fuel burn in exploration conditions. Burned 780 s with a peak heat release of 3,080 W.",
     "safety_relevance": 3,
     "source_url": "https://ntrs.nasa.gov/api/citations/20240007488/downloads/Saffire%20ICES%202024%20Saffire%20presentation072124small.pdf",
-    "source_quote_location": "Slides 11 and 16: Test Matrix VI-3; temperature results",
-    "verified_by_human": false
+    "source_quote_location": "Slides 11 and 16: Test Matrix VI-3; temperature results; slide 20: Heat Release Results",
+    "verified_by_human": false,
+    "source_checked": true
   },
   {
     "id": "saffire-007",
@@ -201,11 +213,12 @@
     "flow_cm_s": 20,
     "flow_direction": "concurrent",
     "outcome": "spread",
-    "finding": "Saffire VI also tested a one-sided 0.5 cm PMMA sample at 28.8% O2 and 55.2 kPa with 20 cm/s concurrent flow.",
+    "finding": "Saffire VI burned a one-sided 0.5 cm PMMA sample at 28.8% O2 and 55.2 kPa with 20 cm/s concurrent flow. Burned 1,200 s with a peak heat release of 1,507 W.",
     "safety_relevance": 3,
     "source_url": "https://ntrs.nasa.gov/api/citations/20240007488/downloads/Saffire%20ICES%202024%20Saffire%20presentation072124small.pdf",
-    "source_quote_location": "Slide 11: Test Matrix (as executed), sample VI-4",
-    "verified_by_human": false
+    "source_quote_location": "Slides 11, 13 and 20: test matrix VI-4, flame image, heat release",
+    "verified_by_human": false,
+    "source_checked": true
   },
   {
     "id": "saffire-008",
@@ -221,7 +234,8 @@
     "safety_relevance": 2,
     "source_url": "https://ntrs.nasa.gov/api/citations/20210017780/downloads/Saffire%20ICES%202021%20Saffire%20Final%20presentation%20compressed.pdf",
     "source_quote_location": "Slide 13: Overview – Spread and Growth",
-    "verified_by_human": false
+    "verified_by_human": false,
+    "source_checked": true
   },
   {
     "id": "sofie-mist-001",
@@ -237,7 +251,8 @@
     "safety_relevance": 3,
     "source_url": "https://engineering.berkeley.edu/news/2024/12/nasa-funded-project-offers-new-insights-into-fire-behavior-in-space/",
     "source_quote_location": "Article body (Fernandez-Pello and Gollner quotes)",
-    "verified_by_human": false
+    "verified_by_human": false,
+    "source_checked": true
   },
   {
     "id": "sofie-mist-002",
@@ -253,7 +268,8 @@
     "safety_relevance": 3,
     "source_url": "https://engineering.berkeley.edu/news/2024/12/nasa-funded-project-offers-new-insights-into-fire-behavior-in-space/",
     "source_quote_location": "Figure caption",
-    "verified_by_human": false
+    "verified_by_human": false,
+    "source_checked": true
   },
   {
     "id": "sofie-mist-003",
@@ -269,7 +285,8 @@
     "safety_relevance": 3,
     "source_url": "https://engineering.berkeley.edu/news/2024/12/nasa-funded-project-offers-new-insights-into-fire-behavior-in-space/",
     "source_quote_location": "Figure caption",
-    "verified_by_human": false
+    "verified_by_human": false,
+    "source_checked": true
   },
   {
     "id": "flex-001",
@@ -285,7 +302,8 @@
     "safety_relevance": 3,
     "source_url": "https://doi.org/10.1007/s12217-014-9372-2",
     "source_quote_location": "Results (limiting oxygen index)",
-    "verified_by_human": false
+    "verified_by_human": false,
+    "source_checked": true
   },
   {
     "id": "flex-002",
@@ -301,7 +319,8 @@
     "safety_relevance": 3,
     "source_url": "https://www.24-7pressrelease.com/press-release/302868/an-old-theory-goes-up-in-cool-flames",
     "source_quote_location": "ISS Program Science Office release",
-    "verified_by_human": false
+    "verified_by_human": false,
+    "source_checked": true
   },
   {
     "id": "flex-003",
@@ -317,7 +336,8 @@
     "safety_relevance": 2,
     "source_url": "https://doi.org/10.1007/s12217-014-9372-2",
     "source_quote_location": "Abstract / results",
-    "verified_by_human": false
+    "verified_by_human": false,
+    "source_checked": true
   },
   {
     "id": "acme-bre-001",
@@ -333,7 +353,8 @@
     "safety_relevance": 3,
     "source_url": "https://drum.lib.umd.edu/handle/1903/29303",
     "source_quote_location": "Abstract",
-    "verified_by_human": false
+    "verified_by_human": false,
+    "source_checked": true
   },
   {
     "id": "acme-bre-002",
@@ -349,7 +370,8 @@
     "safety_relevance": 3,
     "source_url": "https://drum.lib.umd.edu/handle/1903/29303",
     "source_quote_location": "Abstract",
-    "verified_by_human": false
+    "verified_by_human": false,
+    "source_checked": true
   },
   {
     "id": "acme-bre-003",
@@ -365,7 +387,8 @@
     "safety_relevance": 3,
     "source_url": "https://drum.lib.umd.edu/handle/1903/29303",
     "source_quote_location": "Abstract",
-    "verified_by_human": false
+    "verified_by_human": false,
+    "source_checked": true
   },
   {
     "id": "acme-bre-004",
@@ -381,7 +404,8 @@
     "safety_relevance": 3,
     "source_url": "https://drum.lib.umd.edu/handle/1903/27484",
     "source_quote_location": "Abstract",
-    "verified_by_human": false
+    "verified_by_human": false,
+    "source_checked": true
   },
   {
     "id": "cfi-g-001",
@@ -397,7 +421,8 @@
     "safety_relevance": 2,
     "source_url": "https://fpe.umd.edu/news/story/unusual-flames-discovered-aboard-the-international-space-station",
     "source_quote_location": "Article body",
-    "verified_by_human": false
+    "verified_by_human": false,
+    "source_checked": true
   },
   {
     "id": "slice-001",
@@ -406,13 +431,48 @@
     "fuel_form": "coflow jet flame, 3.2 mm nozzle",
     "oxygen_pct": 21,
     "pressure_kpa": null,
-    "flow_cm_s": 17,
+    "flow_cm_s": null,
     "flow_direction": "concurrent",
     "outcome": "steady",
-    "finding": "Without buoyancy, coflow methane flames were noticeably longer than in normal gravity, and soot shifted from the flame centerline toward the edges, which affects smoke production and detection.",
-    "safety_relevance": 2,
+    "finding": "Without buoyancy, coflow methane/air flames were noticeably longer than their normal-gravity counterparts, and flame structure was controlled mainly by the fuel mass flow rate.",
+    "safety_relevance": 1,
     "source_url": "https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20150002322.pdf",
-    "source_quote_location": "Abstract, conclusion (1); coflow speed from ASGSR-2015 slides",
-    "verified_by_human": false
+    "source_quote_location": "Abstract, conclusions (1) and (3)",
+    "verified_by_human": false,
+    "source_checked": true
+  },
+  {
+    "id": "saffire-009",
+    "investigation_id": "saffire",
+    "fuel": "PMMA",
+    "fuel_form": "1 cm two-sided and 0.5 cm one-sided slabs",
+    "oxygen_pct": 30.3,
+    "pressure_kpa": 54.6,
+    "flow_cm_s": 20,
+    "flow_direction": "concurrent",
+    "outcome": "spread",
+    "finding": "The PMMA fires in an exploration-like atmosphere pushed cabin CO above the 24-hour crew limit (+308 and +320 ppm vs 100 ppm) and CO2 above the 1-hour limit (+3.51 and +3.37 mmHg vs 3 mmHg), in a 16.7 m³ spacecraft.",
+    "safety_relevance": 3,
+    "source_url": "https://ntrs.nasa.gov/api/citations/20240007488/downloads/Saffire%20ICES%202024%20Saffire%20presentation072124small.pdf",
+    "source_quote_location": "Slides 20–21: Heat Release Results; Conclusions",
+    "verified_by_human": false,
+    "source_checked": true
+  },
+  {
+    "id": "saffire-010",
+    "investigation_id": "saffire",
+    "fuel": "PMMA",
+    "fuel_form": "two-sided slab, 1 cm thick",
+    "oxygen_pct": 30.3,
+    "pressure_kpa": 54.6,
+    "flow_cm_s": 20,
+    "flow_direction": "concurrent",
+    "outcome": "spread",
+    "finding": "Smoke was readily detected only at 981 s, after most of the hazardous gas had been released; temperature rose significantly only very near the fire, so smoke and toxic gases, not heat, are the main crew hazard.",
+    "safety_relevance": 2,
+    "source_url": "https://ntrs.nasa.gov/api/citations/20240007488/downloads/Saffire%20ICES%202024%20Saffire%20presentation072124small.pdf",
+    "source_quote_location": "Slide 21: Conclusions",
+    "verified_by_human": false,
+    "source_checked": true
   }
 ]

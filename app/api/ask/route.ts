@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
   }
 
   const apiKey = process.env.LLM_API_KEY;
-  const verified = findings.filter((f) => f.verified_by_human);
+  const verified = findings.filter((f) => f.source_checked);
 
   if (!apiKey || verified.length === 0) {
     return NextResponse.json({ answer: FALLBACK_ANSWER });

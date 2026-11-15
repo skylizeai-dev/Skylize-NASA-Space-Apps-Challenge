@@ -60,7 +60,12 @@ completeness = (non-null condition fields) / 3`}
         <h2 className="font-semibold text-zinc-900 dark:text-zinc-50">Data integrity rules</h2>
         <ul className="list-inside list-disc text-sm text-zinc-600 dark:text-zinc-400">
           <li>A missing value is shown as &quot;not reported&quot;, never guessed.</li>
-          <li>A finding ships only once a human has verified it against the NASA source.</li>
+          <li>
+            A finding is shown only after every value has been checked against its cited
+            source document. This check was AI-assisted; independent human review of each
+            row is tracked separately and is not yet complete.
+          </li>
+          <li>A flow direction the source does not state is shown as &quot;unknown&quot;.</li>
           <li>Every card links directly to its PSI record.</li>
         </ul>
       </section>

@@ -32,7 +32,7 @@ export function buildGapsGrid(
   }
 
   for (const f of findings) {
-    if (!f.verified_by_human) continue;
+    if (!f.source_checked) continue;
     if (f.oxygen_pct === null || f.pressure_kpa === null) continue;
 
     const oBucket = Math.floor(f.oxygen_pct / oxygenStep) * oxygenStep;

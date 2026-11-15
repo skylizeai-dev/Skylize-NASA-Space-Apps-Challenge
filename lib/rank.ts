@@ -45,7 +45,7 @@ export function rankFindings(
   findings: Finding[]
 ): ScoredFinding[] {
   return findings
-    .filter((f) => f.verified_by_human)
+    .filter((f) => f.source_checked)
     .map((f) => scoreFinding(atmosphere, f))
     .sort((a, b) => b.score - a.score);
 }

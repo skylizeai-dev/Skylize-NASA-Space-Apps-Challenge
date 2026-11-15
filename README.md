@@ -29,8 +29,10 @@ specific investigations used and their PSI links.
 
 **Data integrity rules:**
 - A missing value is shown as "not reported" — never guessed or interpolated.
-- A finding ships only once `verified_by_human: true` — a person checked it
-  against the linked NASA source.
+- A finding is shown only when `source_checked: true`: every value was checked
+  against the cited source document. This check was AI-assisted. Independent
+  human review is tracked separately in `verified_by_human` and is not yet
+  complete. See `docs/VERIFY.md`.
 
 ## AI use and disclosure
 

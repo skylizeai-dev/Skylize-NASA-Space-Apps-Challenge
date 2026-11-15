@@ -3,7 +3,8 @@
 
 export type SafetyRelevance = 1 | 2 | 3;
 
-export type FlowDirection = "opposed" | "concurrent" | "quiescent";
+// "unknown" when the source does not state the direction — never guessed.
+export type FlowDirection = "opposed" | "concurrent" | "quiescent" | "unknown";
 
 export type Outcome =
   | "spread"
@@ -45,6 +46,9 @@ export interface Finding {
   safety_relevance: SafetyRelevance;
   source_url: string;
   source_quote_location: string;
+  // Every value was checked against the cited source (AI-assisted). This gates display.
+  source_checked: boolean;
+  // Independent human review. Kept separate so the UI never overstates the review level.
   verified_by_human: boolean;
 }
 

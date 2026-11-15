@@ -5,8 +5,6 @@ import { useState } from "react";
 import { APP_NAME } from "@/lib/config";
 
 interface Props {
-  // "" for the dark version at /, "/v4" for the light version.
-  base?: string;
   expert?: boolean;
   onExpert?: (expert: boolean) => void;
 }
@@ -26,7 +24,7 @@ export function FlameMark() {
   );
 }
 
-export default function TopBar({ base = "", expert, onExpert }: Props) {
+export default function TopBar({ expert, onExpert }: Props) {
   const [copied, setCopied] = useState(false);
 
   async function copyLink() {
@@ -42,7 +40,7 @@ export default function TopBar({ base = "", expert, onExpert }: Props) {
   return (
     <header className="topbar sticky top-0 z-20 border-b border-line bg-bg/95 backdrop-blur">
       <div className="mx-auto flex w-full max-w-[1440px] flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2.5">
-        <Link href={base || "/"} className="flex items-center gap-2 text-base font-semibold">
+        <Link href="/" className="flex items-center gap-2 text-base font-semibold">
           <FlameMark />
           {APP_NAME}
         </Link>
@@ -76,17 +74,11 @@ export default function TopBar({ base = "", expert, onExpert }: Props) {
               <span aria-live="polite">{copied ? "Link copied" : "Copy link"}</span>
             </button>
           )}
-          <Link href={`${base}/method`} className="text-ink-2 hover:text-ink">
+          <Link href="/method" className="text-ink-2 hover:text-ink">
             Method
           </Link>
-          <Link href={`${base}/method#data`} className="text-ink-2 hover:text-ink">
+          <Link href="/method#data" className="text-ink-2 hover:text-ink">
             Data
-          </Link>
-          <Link
-            href={base ? "/" : "/v4"}
-            className="rounded border border-line px-2 py-0.5 text-xs text-ink-2 hover:text-ink"
-          >
-            {base ? "Dark version" : "Light version (v4)"}
           </Link>
         </nav>
       </div>

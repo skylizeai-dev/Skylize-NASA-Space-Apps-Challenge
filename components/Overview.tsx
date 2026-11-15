@@ -29,7 +29,6 @@ interface Props {
   atmosphere: Atmosphere;
   readouts: Readout[];
   activeId: string;
-  base: string;
   cells: CoverageCell[];
   ranked: ScoredFinding[];
   top: ScoredFinding[];
@@ -47,7 +46,6 @@ export default function Overview({
   atmosphere,
   readouts,
   activeId,
-  base,
   cells,
   ranked,
   top,
@@ -212,7 +210,7 @@ export default function Overview({
           score = closeness × relevance × completeness
         </span>
         <span>No AI takes part in the ranking, the coverage verdict or the map.</span>
-        <Link href={`${base}/method`} className="font-semibold text-accent hover:underline">
+        <Link href="/method" className="font-semibold text-accent hover:underline">
           Open the method and sources
         </Link>
       </p>

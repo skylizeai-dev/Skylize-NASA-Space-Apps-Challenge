@@ -71,12 +71,12 @@ publishing. In the running app:
 /lib                  rank.ts, coverage.ts, url.ts, format.ts, config.ts, schema.ts
 ```
 
-## Two visual versions
+## Visual design
 
-- `/` is the dark mission-console version.
-- `/v4` is the same dashboard in a light, glass-style theme (`/v4/method` for
-  its method page). Both run the same components and data. Every colour is a
-  token in `app/globals.css`; the `[data-theme="v4"]` block swaps the set.
+One light theme with frosted-glass panels. Every colour is a token in
+`app/globals.css`; text, accent and outcome colours are chosen to pass WCAG AA
+on glass. Where `backdrop-filter` is unsupported, panels fall back to
+near-opaque white.
 
 ## Coverage rule
 

@@ -29,16 +29,15 @@ function term(target: number, value: number | null, range: number, unit: string)
   return `1 − |${fmtNum(target)} − ${fmtNum(value)}| / ${range} = ${closeness.toFixed(3)}  (${unit})`;
 }
 
-// Rendered at /method (dark) and /v4/method (light). `base` keeps links inside the same version.
-export default function MethodContent({ base = "" }: { base?: string }) {
+export default function MethodContent() {
   const plotted = findings.filter((f) => f.oxygen_pct !== null && f.pressure_kpa !== null);
 
   return (
     <>
-      <TopBar base={base} />
+      <TopBar />
       <main className="mx-auto flex w-full max-w-[72ch] flex-1 flex-col gap-10 px-4 py-10">
         <div className="flex flex-col gap-3">
-          <Link href={base || "/"} className="w-fit text-sm text-accent hover:underline">
+          <Link href="/" className="w-fit text-sm text-accent hover:underline">
             Back to the evidence
           </Link>
           <h1 className="text-[28px] leading-tight font-semibold">Method and data</h1>

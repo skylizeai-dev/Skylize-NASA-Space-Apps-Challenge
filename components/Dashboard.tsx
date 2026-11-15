@@ -65,7 +65,7 @@ const PANEL_LABEL: Record<Panel, string> = {
   implications: "Safety implications",
 };
 
-export default function Dashboard({ base = "" }: { base?: string }) {
+export default function Dashboard() {
   const searchParams = useSearchParams();
   // The open panel is read straight from the URL, so the browser Back button
   // returns from a detail view to the overview.
@@ -187,7 +187,7 @@ export default function Dashboard({ base = "" }: { base?: string }) {
 
   return (
     <MotionConfig reducedMotion="user">
-      <TopBar base={base} expert={view.expert} onExpert={(expert) => setView((v) => ({ ...v, expert }))} />
+      <TopBar expert={view.expert} onExpert={(expert) => setView((v) => ({ ...v, expert }))} />
 
       <main className="mx-auto grid w-full max-w-[1440px] flex-1 grid-cols-1 gap-6 px-4 py-4 md:grid-cols-[300px_minmax(0,1fr)] xl:grid-cols-[320px_minmax(0,1fr)]">
         <div className="md:sticky md:top-[68px] md:self-start">
@@ -241,7 +241,6 @@ export default function Dashboard({ base = "" }: { base?: string }) {
               atmosphere={atmosphere}
               readouts={readouts}
               activeId={activePreset}
-              base={base}
               cells={cells}
               ranked={ranked}
               top={top}

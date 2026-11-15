@@ -1,27 +1,25 @@
 @import "tailwindcss";
 
-/* Design tokens: FireSight UI/UX blueprint, section 3.
-   Colours are plain theme variables, so a wrapper can swap the whole set:
-   the default is the dark mission console; [data-theme="v4"] below is the
-   light glass version served at /v4. */
+/* Design tokens. FireSight has one theme: light, with frosted-glass panels.
+   Text, accent and outcome colours are dark enough to pass WCAG AA on glass. */
 @theme {
-  --color-bg: #0b0f17;
-  --color-surface: #121826;
-  --color-surface-2: #1a2233;
-  --color-line: #263042;
-  --color-ink: #e6eaf2;
-  --color-ink-2: #9aa4b8;
-  --color-muted: #7c8699;
-  --color-accent: #4cc9f0;
-  --color-action: #ff8a3d;
-  --color-ai: #b69cff;
-  --color-spread: #ff6b5b;
-  --color-steady: #ffb547;
-  --color-extinguished: #5dd39e;
-  --color-noignition: #a3b1c6;
-  --color-cool: #b69cff;
-  --color-ramp-1: #1b3a4b;
-  --color-ramp-2: #2a6f8f;
+  --color-bg: #f3f6fb;
+  --color-surface: rgb(255 255 255 / 0.56);
+  --color-surface-2: rgb(255 255 255 / 0.84);
+  --color-line: rgb(15 27 45 / 0.14);
+  --color-ink: #0f1b2d;
+  --color-ink-2: #40506a;
+  --color-muted: #5a6880;
+  --color-accent: #0a6e96;
+  --color-action: #c2410c;
+  --color-ai: #6441d0;
+  --color-spread: #c5352b;
+  --color-steady: #96590a;
+  --color-extinguished: #177a4e;
+  --color-noignition: #56657d;
+  --color-cool: #6441d0;
+  --color-ramp-1: #cfe8f4;
+  --color-ramp-2: #6fb7d6;
 }
 @theme inline {
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
@@ -30,28 +28,30 @@
 
 :root {
   /* Tokens that are not Tailwind colours. */
-  --hatch-line: var(--color-line);
-  --chart-hatch-bg: #1a2233;
-  --chart-hatch-line: #3a4763;
-  --chart-mark-halo: #0b0f17;
-  --chart-range-fill: rgb(76 201 240 / 0.07);
-  --scrim: rgb(11 15 23 / 0.7);
-  --mark-core: #e6eaf2;
-  --mark-ring: #4cc9f0;
-  --flame-earth-core: #fff3c4;
-  --flame-earth-mid: #ffd166;
-  --flame-earth-edge: #ff9f43;
-  --flame-micro-inner: #2a6f8f;
-  --flame-micro-ring: #4cc9f0;
+  --hatch-line: rgb(15 27 45 / 0.22);
+  --chart-hatch-bg: #eaf0f7;
+  --chart-hatch-line: #93a5bd;
+  --chart-mark-halo: #ffffff;
+  --chart-range-fill: rgb(10 110 150 / 0.09);
+  --scrim: rgb(15 27 45 / 0.28);
+  --mark-core: #ffffff;
+  --mark-ring: #2ba7d6;
+  --flame-earth-core: #ffe08a;
+  --flame-earth-mid: #ffab40;
+  --flame-earth-edge: #f2701d;
+  --flame-micro-inner: #7dbfdb;
+  --flame-micro-ring: #1d9bd1;
 }
 
 html {
-  color-scheme: dark;
-  background: var(--color-bg);
+  color-scheme: light;
+  background: #eef2f8;
 }
 
 body {
-  background: var(--color-bg);
+  position: relative;
+  isolation: isolate;
+  background: #eef2f8;
   color: var(--color-ink);
   font-family: var(--font-sans);
   font-size: 14px;
@@ -243,55 +243,11 @@ dialog.drawer[open] {
 }
 
 /* ------------------------------------------------------------------
-   v4: light glass theme, served at /v4.
-   The backdrop is the two flames from the hero, diffused: blue
+   Glass. The backdrop is the two flames from the hero, diffused: blue
    microgravity light from the top left, a warm Earth-flame glow from the
-   right. Panels are frosted glass over it. Text and outcome colours are
-   darkened so they pass WCAG AA on the lightest and the most tinted glass.
+   right. Panels are frosted glass over it.
    ------------------------------------------------------------------ */
-[data-theme="v4"] {
-  --color-bg: #f3f6fb;
-  --color-surface: rgb(255 255 255 / 0.56);
-  --color-surface-2: rgb(255 255 255 / 0.84);
-  --color-line: rgb(15 27 45 / 0.14);
-  --color-ink: #0f1b2d;
-  --color-ink-2: #40506a;
-  --color-muted: #5a6880;
-  --color-accent: #0a6e96;
-  --color-action: #c2410c;
-  --color-ai: #6441d0;
-  --color-spread: #c5352b;
-  --color-steady: #96590a;
-  --color-extinguished: #177a4e;
-  --color-noignition: #56657d;
-  --color-cool: #6441d0;
-  --color-ramp-1: #cfe8f4;
-  --color-ramp-2: #6fb7d6;
-
-  --hatch-line: rgb(15 27 45 / 0.22);
-  --chart-hatch-bg: #eaf0f7;
-  --chart-hatch-line: #93a5bd;
-  --chart-mark-halo: #ffffff;
-  --chart-range-fill: rgb(10 110 150 / 0.09);
-  --scrim: rgb(15 27 45 / 0.28);
-  --mark-core: #ffffff;
-  --mark-ring: #2ba7d6;
-  --flame-earth-core: #ffe08a;
-  --flame-earth-mid: #ffab40;
-  --flame-earth-edge: #f2701d;
-  --flame-micro-inner: #7dbfdb;
-  --flame-micro-ring: #1d9bd1;
-
-  /* Set here, not on <html>: the router can keep a previous route mounted
-     but hidden, so a page-level :has() check would leak into the dark version. */
-  color-scheme: light;
-  position: relative;
-  isolation: isolate;
-  color: var(--color-ink);
-  background: #eef2f8;
-}
-
-[data-theme="v4"]::before {
+body::before {
   content: "";
   position: fixed;
   inset: 0;
@@ -305,7 +261,7 @@ dialog.drawer[open] {
 
 /* Glass panels. Every panel in the app is a .bg-surface, so the frost,
    the light edge and the soft shadow are applied there. */
-[data-theme="v4"] .bg-surface {
+.bg-surface {
   -webkit-backdrop-filter: blur(18px) saturate(1.5);
   backdrop-filter: blur(18px) saturate(1.5);
   border-top-color: rgb(255 255 255 / 0.85);
@@ -315,56 +271,56 @@ dialog.drawer[open] {
     inset 0 1px 0 rgb(255 255 255 / 0.7),
     0 10px 30px -12px rgb(15 27 45 / 0.18);
 }
-[data-theme="v4"] .bg-surface:not(.border-l-ai) {
+.bg-surface:not(.border-l-ai) {
   border-left-color: rgb(255 255 255 / 0.85);
 }
-[data-theme="v4"] .rounded-lg {
+.rounded-lg {
   border-radius: 16px;
 }
-[data-theme="v4"] .rounded-md {
+.rounded-md {
   border-radius: 10px;
 }
 
 /* Inputs, chips and inner wells: clearer glass set into the panel. */
-[data-theme="v4"] .bg-bg {
+.bg-bg {
   background-color: rgb(255 255 255 / 0.62);
 }
-[data-theme="v4"] .topbar {
+.topbar {
   background-color: rgb(255 255 255 / 0.55);
   -webkit-backdrop-filter: blur(20px) saturate(1.6);
   backdrop-filter: blur(20px) saturate(1.6);
   border-bottom-color: rgb(255 255 255 / 0.8);
   box-shadow: 0 1px 0 rgb(15 27 45 / 0.06);
 }
-[data-theme="v4"] dialog.drawer {
+dialog.drawer {
   -webkit-backdrop-filter: blur(28px) saturate(1.6);
   backdrop-filter: blur(28px) saturate(1.6);
   border-left-color: rgb(255 255 255 / 0.85);
   box-shadow: -18px 0 48px -20px rgb(15 27 45 / 0.3);
 }
-[data-theme="v4"] .term::after {
+.term::after {
   background: rgb(255 255 255 / 0.96);
   box-shadow: 0 8px 24px -10px rgb(15 27 45 / 0.3);
 }
-[data-theme="v4"] .skeleton {
+.skeleton {
   border-color: rgb(255 255 255 / 0.8);
 }
-[data-theme="v4"] input[type="range"]::-webkit-slider-runnable-track {
+input[type="range"]::-webkit-slider-runnable-track {
   background: rgb(15 27 45 / 0.16);
 }
-[data-theme="v4"] input[type="range"]::-moz-range-track {
+input[type="range"]::-moz-range-track {
   background: rgb(15 27 45 / 0.16);
 }
-[data-theme="v4"] input[type="range"]::-webkit-slider-thumb {
+input[type="range"]::-webkit-slider-thumb {
   border-color: #ffffff;
 }
-[data-theme="v4"] input[type="range"]::-moz-range-thumb {
+input[type="range"]::-moz-range-thumb {
   border-color: #ffffff;
 }
 
 /* Browsers without backdrop-filter get near-opaque panels instead of unreadable ones. */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  [data-theme="v4"] {
+  :root {
     --color-surface: rgb(255 255 255 / 0.92);
   }
 }

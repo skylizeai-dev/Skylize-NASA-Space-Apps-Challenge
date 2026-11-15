@@ -4,10 +4,10 @@ import TopBar from "@/components/TopBar";
 
 // The dashboard reads its state from the URL, so it renders inside Suspense.
 // The fallback is a skeleton of the real layout, never a blank screen.
-function DashboardSkeleton() {
+export function DashboardSkeleton({ base = "" }: { base?: string }) {
   return (
     <>
-      <TopBar />
+      <TopBar base={base} />
       <main
         aria-busy="true"
         aria-label="Loading evidence"

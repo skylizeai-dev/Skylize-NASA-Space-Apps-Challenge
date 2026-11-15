@@ -5,6 +5,8 @@ import { useState } from "react";
 import { APP_NAME } from "@/lib/config";
 
 interface Props {
+  // "" for the dark version at /, "/v4" for the light version.
+  base?: string;
   expert?: boolean;
   onExpert?: (expert: boolean) => void;
 }
@@ -18,13 +20,13 @@ export function FlameMark() {
       className="block h-5 w-5 rounded-full"
       style={{
         background:
-          "radial-gradient(circle at 50% 55%, #E6EAF2 0 12%, #4CC9F0 38%, #2A6F8F 62%, transparent 72%)",
+          "radial-gradient(circle at 50% 55%, var(--mark-core) 0 12%, var(--mark-ring) 38%, var(--color-ramp-2) 62%, transparent 72%)",
       }}
     />
   );
 }
 
-export default function TopBar({ expert, onExpert }: Props) {
+export default function TopBar({ base = "", expert, onExpert }: Props) {
   const [copied, setCopied] = useState(false);
 
   async function copyLink() {
@@ -38,9 +40,9 @@ export default function TopBar({ expert, onExpert }: Props) {
   }
 
   return (
-    <header className="sticky top-0 z-20 border-b border-line bg-bg/95 backdrop-blur">
+    <header className="topbar sticky top-0 z-20 border-b border-line bg-bg/95 backdrop-blur">
       <div className="mx-auto flex w-full max-w-[1440px] flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2.5">
-        <Link href="/" className="flex items-center gap-2 text-base font-semibold">
+        <Link href={base || "/"} className="flex items-center gap-2 text-base font-semibold">
           <FlameMark />
           {APP_NAME}
         </Link>
@@ -74,11 +76,17 @@ export default function TopBar({ expert, onExpert }: Props) {
               <span aria-live="polite">{copied ? "Link copied" : "Copy link"}</span>
             </button>
           )}
-          <Link href="/method" className="text-ink-2 hover:text-ink">
+          <Link href={`${base}/method`} className="text-ink-2 hover:text-ink">
             Method
           </Link>
-          <Link href="/method#data" className="text-ink-2 hover:text-ink">
+          <Link href={`${base}/method#data`} className="text-ink-2 hover:text-ink">
             Data
+          </Link>
+          <Link
+            href={base ? "/" : "/v4"}
+            className="rounded border border-line px-2 py-0.5 text-xs text-ink-2 hover:text-ink"
+          >
+            {base ? "Dark version" : "Light version (v4)"}
           </Link>
         </nav>
       </div>

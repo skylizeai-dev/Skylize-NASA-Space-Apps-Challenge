@@ -10,25 +10,26 @@ export const OUTCOMES: Outcome[] = [
 ];
 
 // Colour is never the only signal: each outcome also has a shape and a label.
+// Colours are tokens, so each theme can supply values that pass contrast.
 export const OUTCOME_META: Record<
   Outcome,
   { label: string; color: string; sentence: string }
 > = {
-  spread: { label: "Spread", color: "#FF6B5B", sentence: "the flame spread" },
-  steady: { label: "Steady", color: "#FFB547", sentence: "the flame burned steadily" },
+  spread: { label: "Spread", color: "var(--color-spread)", sentence: "the flame spread" },
+  steady: { label: "Steady", color: "var(--color-steady)", sentence: "the flame burned steadily" },
   extinguished: {
     label: "Extinguished",
-    color: "#5DD39E",
+    color: "var(--color-extinguished)",
     sentence: "the flame went out",
   },
   "no-ignition": {
     label: "No ignition",
-    color: "#A3B1C6",
+    color: "var(--color-noignition)",
     sentence: "the fuel did not ignite",
   },
   "cool-flame": {
     label: "Cool flame",
-    color: "#B69CFF",
+    color: "var(--color-cool)",
     sentence: "a cool flame formed",
   },
 };

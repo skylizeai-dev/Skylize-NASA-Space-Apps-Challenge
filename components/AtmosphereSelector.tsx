@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import { DOMAIN } from "@/lib/coverage";
 import { FLOW_LABEL, KPA_TO_PSI, fmtNum } from "@/lib/format";
 import { clamp, type ViewState } from "@/lib/url";
@@ -156,7 +156,7 @@ function Field({
   action?: React.ReactNode;
   onChange: (value: number) => void;
 }) {
-  const id = `field-${label.toLowerCase()}`;
+  const id = `${useId()}-${label.toLowerCase()}`;
   const shown = Number((value * scale).toFixed(scale === 1 ? 1 : 2));
   return (
     <div className="flex flex-col gap-1">

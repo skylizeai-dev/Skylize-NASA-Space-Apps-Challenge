@@ -118,7 +118,7 @@ export default function EvidenceCard({
               style={{
                 width: `${Math.max(finding.score, 0.01) * 100}%`,
                 background:
-                  finding.score > 0.66 ? "#4CC9F0" : finding.score > 0.33 ? "#2A6F8F" : "#3B7F9E",
+                  finding.score > 0.66 ? "var(--color-accent)" : finding.score > 0.33 ? "var(--color-ramp-2)" : "var(--color-ramp-2)",
               }}
             />
           </div>

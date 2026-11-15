@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { useMemo } from "react";
+import { useId, useMemo } from "react";
 import {
   CELL,
   DOMAIN,
@@ -29,6 +29,7 @@ interface Props {
   atmosphere: Atmosphere;
   readouts: Readout[];
   activeId: string;
+  base: string;
   cells: CoverageCell[];
   ranked: ScoredFinding[];
   top: ScoredFinding[];
@@ -46,6 +47,7 @@ export default function Overview({
   atmosphere,
   readouts,
   activeId,
+  base,
   cells,
   ranked,
   top,
@@ -210,7 +212,7 @@ export default function Overview({
           score = closeness × relevance × completeness
         </span>
         <span>No AI takes part in the ranking, the coverage verdict or the map.</span>
-        <Link href="/method" className="font-semibold text-accent hover:underline">
+        <Link href={`${base}/method`} className="font-semibold text-accent hover:underline">
           Open the method and sources
         </Link>
       </p>
@@ -315,11 +317,6 @@ const O = DOMAIN.oxygen_pct;
 const P = DOMAIN.pressure_kpa;
 const mx = (o: number) => ((o - O.min) / (O.max - O.min)) * SIZE;
 const my = (p: number) => SIZE - ((p - P.min) / (P.max - P.min)) * SIZE;
-const MINI_FILL: Record<CoverageStatus, string> = {
-  tested: "#1B3A4B",
-  thin: "url(#mini-hatch-light)",
-  untested: "url(#mini-hatch)",
-};
 
 // A thumbnail of the oxygen x pressure map: same shading and marks, no axes.
 function MiniMap({
@@ -332,6 +329,12 @@ function MiniMap({
   findings: ScoredFinding[];
 }) {
   const background = useMemo(() => runs(cells), [cells]);
+  const uid = useId().replace(/[^a-zA-Z0-9_-]/g, "");
+  const MINI_FILL: Record<CoverageStatus, string> = {
+    tested: "var(--color-ramp-1)",
+    thin: `url(#${uid}-hatch-light)`,
+    untested: `url(#${uid}-hatch)`,
+  };
   const cx = mx(atmosphere.oxygen_pct);
   const cy = my(atmosphere.pressure_kpa);
   return (
@@ -344,13 +347,13 @@ function MiniMap({
       aria-label="Thumbnail of tested oxygen and pressure conditions with your atmosphere marked"
     >
       <defs>
-        <pattern id="mini-hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-          <rect width="6" height="6" fill="#1A2233" />
-          <rect width="1.5" height="6" fill="#3A4763" />
+        <pattern id={`${uid}-hatch`} width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <rect width="6" height="6" fill="var(--chart-hatch-bg)" />
+          <rect width="1.5" height="6" fill="var(--chart-hatch-line)" />
         </pattern>
-        <pattern id="mini-hatch-light" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-          <rect width="9" height="9" fill="#1A2233" />
-          <rect width="1" height="9" fill="#3A4763" />
+        <pattern id={`${uid}-hatch-light`} width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <rect width="9" height="9" fill="var(--chart-hatch-bg)" />
+          <rect width="1" height="9" fill="var(--chart-hatch-line)" />
         </pattern>
       </defs>
       {background.map((r) => (
@@ -372,13 +375,13 @@ function MiniMap({
             cy={my(f.pressure_kpa as number)}
             r="2.5"
             fill={OUTCOME_META[f.outcome].color}
-            stroke="#0B0F17"
+            stroke="var(--chart-mark-halo)"
             strokeWidth="0.75"
           />
         ))}
-      <line x1={cx} x2={cx} y1="0" y2={SIZE} stroke="#4CC9F0" strokeWidth="1" />
-      <line x1="0" x2={SIZE} y1={cy} y2={cy} stroke="#4CC9F0" strokeWidth="1" />
-      <circle cx={cx} cy={cy} r="4" fill="#0B0F17" stroke="#4CC9F0" strokeWidth="2" />
+      <line x1={cx} x2={cx} y1="0" y2={SIZE} stroke="var(--color-accent)" strokeWidth="1" />
+      <line x1="0" x2={SIZE} y1={cy} y2={cy} stroke="var(--color-accent)" strokeWidth="1" />
+      <circle cx={cx} cy={cy} r="4" fill="var(--chart-mark-halo)" stroke="var(--color-accent)" strokeWidth="2" />
     </svg>
   );
 }

@@ -71,6 +71,13 @@ publishing. In the running app:
 /lib                  rank.ts, coverage.ts, url.ts, format.ts, config.ts, schema.ts
 ```
 
+## Two visual versions
+
+- `/` is the dark mission-console version.
+- `/v4` is the same dashboard in a light, glass-style theme (`/v4/method` for
+  its method page). Both run the same components and data. Every colour is a
+  token in `app/globals.css`; the `[data-theme="v4"]` block swaps the set.
+
 ## Coverage rule
 
 A point on the oxygen x pressure plane is **tested** when 3 or more distinct

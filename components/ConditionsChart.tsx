@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import {
   CELL,
   DOMAIN,
@@ -30,11 +30,6 @@ const P = DOMAIN.pressure_kpa;
 const x = (o: number) => M.left + ((o - O.min) / (O.max - O.min)) * PW;
 const y = (p: number) => M.top + PH - ((p - P.min) / (P.max - P.min)) * PH;
 
-const FILL: Record<CoverageStatus, string> = {
-  tested: "#1B3A4B",
-  thin: "url(#hatch-light)",
-  untested: "url(#hatch)",
-};
 
 // Merge same-status neighbours in a row into one rect.
 export function runs(cells: CoverageCell[]) {
@@ -62,6 +57,13 @@ export function runs(cells: CoverageCell[]) {
 
 export default function ConditionsChart({ atmosphere, findings, cells, onSelect }: Props) {
   const [hovered, setHovered] = useState<string | null>(null);
+  // Per-instance ids: a hidden copy of the page may also be in the document.
+  const uid = useId().replace(/[^a-zA-Z0-9_-]/g, "");
+  const FILL: Record<CoverageStatus, string> = {
+    tested: "var(--color-ramp-1)",
+    thin: `url(#${uid}-hatch-light)`,
+    untested: `url(#${uid}-hatch)`,
+  };
   const background = useMemo(() => runs(cells), [cells]);
 
   // Marks that would overlap are spread sideways so each stays readable and
@@ -123,20 +125,20 @@ export default function ConditionsChart({ atmosphere, findings, cells, onSelect 
       <div className="relative">
         <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="group" aria-label="Oxygen against pressure, with every plottable finding and your atmosphere">
           <defs>
-            <pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-              <rect width="8" height="8" fill="#1A2233" />
-              <rect width="2" height="8" fill="#3A4763" />
+            <pattern id={`${uid}-hatch`} width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+              <rect width="8" height="8" fill="var(--chart-hatch-bg)" />
+              <rect width="2" height="8" fill="var(--chart-hatch-line)" />
             </pattern>
-            <pattern id="hatch-light" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-              <rect width="12" height="12" fill="#1A2233" />
-              <rect width="1" height="12" fill="#3A4763" />
+            <pattern id={`${uid}-hatch-light`} width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+              <rect width="12" height="12" fill="var(--chart-hatch-bg)" />
+              <rect width="1" height="12" fill="var(--chart-hatch-line)" />
             </pattern>
-            <clipPath id="plot">
+            <clipPath id={`${uid}-plot`}>
               <rect x={M.left} y={M.top} width={PW} height={PH} />
             </clipPath>
           </defs>
 
-          <g clipPath="url(#plot)">
+          <g clipPath={`url(#${uid}-plot)`}>
             {background.map((r) => (
               <rect
                 key={`${r.o}:${r.p}`}
@@ -148,11 +150,11 @@ export default function ConditionsChart({ atmosphere, findings, cells, onSelect 
               />
             ))}
           </g>
-          <rect x={M.left} y={M.top} width={PW} height={PH} fill="none" stroke="#263042" />
+          <rect x={M.left} y={M.top} width={PW} height={PH} fill="none" stroke="var(--color-line)" />
 
           {[10, 20, 30, 40].map((o) => (
             <g key={o}>
-              <line x1={x(o)} x2={x(o)} y1={M.top + PH} y2={M.top + PH + 4} stroke="#7C8699" />
+              <line x1={x(o)} x2={x(o)} y1={M.top + PH} y2={M.top + PH + 4} stroke="var(--color-muted)" />
               <text x={x(o)} y={M.top + PH + 16} textAnchor="middle" className="num fill-ink-2 text-[10px]">
                 {o}
               </text>
@@ -160,7 +162,7 @@ export default function ConditionsChart({ atmosphere, findings, cells, onSelect 
           ))}
           {[40, 60, 80, 100].map((p) => (
             <g key={p}>
-              <line x1={M.left - 4} x2={M.left} y1={y(p)} y2={y(p)} stroke="#7C8699" />
+              <line x1={M.left - 4} x2={M.left} y1={y(p)} y2={y(p)} stroke="var(--color-muted)" />
               <text x={M.left - 7} y={y(p) + 3} textAnchor="end" className="num fill-ink-2 text-[10px]">
                 {p}
               </text>
@@ -193,18 +195,18 @@ export default function ConditionsChart({ atmosphere, findings, cells, onSelect 
           ))}
 
           {/* The selected atmosphere: crosshair plus the close-range window. */}
-          <g clipPath="url(#plot)" pointerEvents="none">
+          <g clipPath={`url(#${uid}-plot)`} pointerEvents="none">
             <rect
               x={boxLeft}
               y={boxTop}
               width={boxRight - boxLeft}
               height={boxBottom - boxTop}
-              fill="rgb(76 201 240 / 0.07)"
-              stroke="#4CC9F0"
+              fill="var(--chart-range-fill)"
+              stroke="var(--color-accent)"
               strokeDasharray="3 3"
             />
-            <line x1={cx} x2={cx} y1={M.top} y2={M.top + PH} stroke="#4CC9F0" strokeWidth="1" />
-            <line x1={M.left} x2={M.left + PW} y1={cy} y2={cy} stroke="#4CC9F0" strokeWidth="1" />
+            <line x1={cx} x2={cx} y1={M.top} y2={M.top + PH} stroke="var(--color-accent)" strokeWidth="1" />
+            <line x1={M.left} x2={M.left + PW} y1={cy} y2={cy} stroke="var(--color-accent)" strokeWidth="1" />
           </g>
 
           {points.map(({ f, cx: px, cy: py }) => (
@@ -229,12 +231,12 @@ export default function ConditionsChart({ atmosphere, findings, cells, onSelect 
               onFocus={() => setHovered(f.id)}
               onBlur={() => setHovered(null)}
             >
-              <circle r="6.5" fill="#0B0F17" opacity={hovered === f.id ? 1 : 0.85} stroke={hovered === f.id ? "#E6EAF2" : "none"} />
+              <circle r="6.5" fill="var(--chart-mark-halo)" opacity={hovered === f.id ? 1 : 0.85} stroke={hovered === f.id ? "var(--color-ink)" : "none"} />
               <OutcomeShape outcome={f.outcome} />
             </g>
           ))}
 
-          <circle cx={cx} cy={cy} r="5" fill="#0B0F17" stroke="#4CC9F0" strokeWidth="2" pointerEvents="none" />
+          <circle cx={cx} cy={cy} r="5" fill="var(--chart-mark-halo)" stroke="var(--color-accent)" strokeWidth="2" pointerEvents="none" />
         </svg>
 
         {active && (

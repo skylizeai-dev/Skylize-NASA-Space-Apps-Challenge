@@ -1,1 +1,115 @@
-[]
+[
+  {
+    "id": "bass-ii",
+    "name": "Burning and Suppression of Solids-II",
+    "category": "solid-fuels",
+    "platform": "ISS",
+    "facility": "Microgravity Science Glovebox",
+    "years": "2014–2016",
+    "objective": "Study ignition, flame growth, flame spread and extinction limits of solid fuels burning in low-velocity forced flows in microgravity, with oxygen lowered by nitrogen dilution of the glovebox.",
+    "ai_summary": "BASS-II burned PMMA rods, sheets and slabs and a cotton-fiberglass fabric in a small flow duct inside the ISS glovebox, varying airflow (0 to 55 cm/s) and oxygen (21% and below). Its central fire-safety result is that materials can keep burning at lower oxygen in microgravity than in normal gravity. It also showed that flames always went out when the fan was switched off, supporting the ISS practice of shutting down ventilation when a fire is detected.",
+    "psi_url": "https://ntrs.nasa.gov/citations/20210011385",
+    "publications": [
+      { "title": "Burning and Suppression of Solids-II (BASS-II) Summary Report", "year": 2021, "url": "https://ntrs.nasa.gov/citations/20210011385" },
+      { "title": "Combustion of Solids in Microgravity: Results from the BASS-II Experiment", "year": 2016, "url": "https://ntrs.nasa.gov/citations/20160000593" },
+      { "title": "Opposed flame spread over PMMA cylinders in microgravity and normal gravity (Scientific Reports)", "year": 2018, "url": "https://doi.org/10.1038/s41598-017-18398-4" },
+      { "title": "Flammability Limits from BASS-II Testing in Microgravity Compared to Normal Gravity Limits (ICES-2019)", "year": 2019, "url": "https://ttu-ir.tdl.org/items/1922ad9f-ef4c-4f52-96a4-980c23debe5e" }
+    ]
+  },
+  {
+    "id": "saffire",
+    "name": "Spacecraft Fire Safety Demonstration (Saffire I–VI)",
+    "category": "solid-fuels",
+    "platform": "Cygnus cargo vehicle (uncrewed, after ISS departure)",
+    "facility": "Saffire Flow Unit + Far Field Diagnostics",
+    "years": "2016–2023",
+    "objective": "Observe large-scale fire growth and spread on thin and thick solid fuels in long-duration microgravity, including the reduced-pressure, elevated-oxygen atmospheres planned for exploration spacecraft, and measure the fire's impact on the vehicle.",
+    "ai_summary": "Saffire burned samples up to about 94 cm long inside an orbiting Cygnus spacecraft, the first practical-scale spacecraft fire tests. Flames reached a steady size and spread rate rather than growing without limit as they tend to on Earth. Saffire V and VI tested exploration-like atmospheres down to about 54 kPa and up to about 31% oxygen, the closest flight evidence to planned Moon and Mars habitat conditions.",
+    "psi_url": "https://www.nasa.gov/wp-content/uploads/2025/07/spacecraft-fire-safety-demonstration-saffire.pdf",
+    "publications": [
+      { "title": "Preliminary Results from the Saffire VI Experiment (ICES-2024)", "year": 2024, "url": "https://ntrs.nasa.gov/citations/20240002981" },
+      { "title": "Fire Safety Implications of Preliminary Results from Saffire IV and V (ICES-2021)", "year": 2021, "url": "https://ntrs.nasa.gov/api/citations/20210011521/downloads/ICES%202021-266%200503-2021%20final.pdf" },
+      { "title": "Saffire ICES 2021 presentation (test matrix and findings)", "year": 2021, "url": "https://ntrs.nasa.gov/api/citations/20210017780/downloads/Saffire%20ICES%202021%20Saffire%20Final%20presentation%20compressed.pdf" },
+      { "title": "Saffire ICES 2024 presentation (Saffire VI test matrix)", "year": 2024, "url": "https://ntrs.nasa.gov/api/citations/20240007488/downloads/Saffire%20ICES%202024%20Saffire%20presentation072124small.pdf" }
+    ]
+  },
+  {
+    "id": "sofie-mist",
+    "name": "Solid Fuel Ignition and Extinction – Material Ignition and Suppression Test",
+    "category": "solid-fuels",
+    "platform": "ISS",
+    "facility": "Combustion Integrated Rack (SoFIE insert)",
+    "years": "2023–2025",
+    "objective": "Map ignition and extinction boundaries of PMMA cylinders as a function of flow speed, oxygen concentration, pressure and external radiant heating, with emphasis on NASA's proposed space exploration atmospheres.",
+    "ai_summary": "SoFIE-MIST burned acrylic (PMMA) rods in the Combustion Integrated Rack at pressures down to 60 kPa. Researchers report the limiting oxygen concentration in microgravity is about 15%, compared with about 18% in normal gravity. That means materials judged non-flammable on Earth may burn in a spacecraft, and added external heating may lower the limit further.",
+    "psi_url": "https://science.nasa.gov/biological-physical/investigations/sofie-mist",
+    "publications": [
+      { "title": "NASA-funded project offers new insights into fire behavior in space (UC Berkeley Engineering)", "year": 2024, "url": "https://engineering.berkeley.edu/news/2024/12/nasa-funded-project-offers-new-insights-into-fire-behavior-in-space/" },
+      { "title": "Solid Fuel Ignition and Extinction (SoFIE) Project on ISS", "year": 2020, "url": "https://ntrs.nasa.gov/citations/20200000361" },
+      { "title": "Material Ignition and Suppression Test (MIST) in Space Exploration Atmospheres, Summary of Research", "year": 2015, "url": "https://ntrs.nasa.gov/citations/20150023467" }
+    ]
+  },
+  {
+    "id": "flex",
+    "name": "Flame Extinguishment Experiment (FLEX)",
+    "category": "droplets",
+    "platform": "ISS",
+    "facility": "Combustion Integrated Rack (Multi-User Droplet Combustion Apparatus)",
+    "years": "2009–2012",
+    "objective": "Study how isolated burning fuel droplets extinguish in microgravity across oxygen levels, pressures and diluents (nitrogen, carbon dioxide, helium), to inform fire suppression for spacecraft.",
+    "ai_summary": "FLEX burned single heptane and methanol droplets 1.5–5 mm across at 0.7–3.0 atm and 10–40% oxygen. It measured the oxygen levels below which droplets will not burn and showed how extinction size shifts as oxygen is reduced. It also discovered that large heptane droplets keep burning with an invisible 'cool flame' after the visible flame goes out, so a fire that looks extinguished may not be.",
+    "psi_url": "https://doi.org/10.1007/s12217-014-9372-2",
+    "publications": [
+      { "title": "Droplet Combustion Experiments Aboard the International Space Station (Microgravity Sci. Technol.)", "year": 2014, "url": "https://doi.org/10.1007/s12217-014-9372-2" },
+      { "title": "Cool-flame extinction during n-alkane droplet combustion in microgravity", "year": 2014, "url": "https://ntrs.nasa.gov/api/citations/20140006750/downloads/20140006750.pdf" },
+      { "title": "Cool Flames on the International Space Station – An Anatomy of Discovery (NASA ISS Science Blog)", "year": 2013, "url": "https://blogs.nasa.gov/ISS_Science_Blog/2013/11/25/cool-flames-on-the-international-space-station-an-anatomy-of-discovery/" }
+    ]
+  },
+  {
+    "id": "acme-bre",
+    "name": "ACME – Burning Rate Emulator (BRE)",
+    "category": "solid-fuels",
+    "platform": "ISS",
+    "facility": "Combustion Integrated Rack (ACME insert)",
+    "years": "2019–2020",
+    "objective": "Use a gas-fed porous burner with embedded heat-flux gauges to emulate the burning of solid and liquid materials, and map which materials can burn steadily in microgravity at different oxygen levels and pressures.",
+    "ai_summary": "BRE emulated burning solids with ethylene/nitrogen flames on 25 and 50 mm porous burners at 21–40% oxygen and 0.56–1 bar, including NASA habitat atmospheres. Every flame in 21% oxygen self-extinguished within 40 seconds, while steady flames were achieved at 26.5%, 34% and 40% oxygen. Flame lifetimes scale strongly with oxygen fraction and were independent of pressure, which the researchers cite as further evidence of the hazard of oxygen-enriched spacecraft atmospheres.",
+    "psi_url": "https://www1.grc.nasa.gov/space/iss-research/iss-fcf/cir/acme/experiments/bre/",
+    "publications": [
+      { "title": "Burning In Microgravity: Experimental Results And Analysis (Combustion and Flame)", "year": 2021, "url": "https://www.aminer.org/pub/609a6d71e4510cd7c88f20ea/burning-in-microgravity-experimental-results-and-analysis" },
+      { "title": "Burning Emulations of Condensed Phase Fuels Aboard the ISS (PhD dissertation, UMD)", "year": 2022, "url": "https://drum.lib.umd.edu/handle/1903/29303" },
+      { "title": "Using a Burning Rate Emulator to Analyze Flame Extinction Time on the ISS (MS thesis, UMD)", "year": 2021, "url": "https://drum.lib.umd.edu/handle/1903/27484" }
+    ]
+  },
+  {
+    "id": "cfi-g",
+    "name": "Cool Flames Investigation with Gases (CFI-G)",
+    "category": "gaseous",
+    "platform": "ISS",
+    "facility": "Combustion Integrated Rack (ACME insert)",
+    "years": "2021",
+    "objective": "Produce and study steady, spherical non-premixed cool flames burning gaseous fuel in microgravity, without the heated reactants ground tests require.",
+    "ai_summary": "CFI-G produced the first steady spherical cool diffusion flames burning a gaseous fuel (n-butane), on June 23, 2021. The cool flames were too faint to see in real time and were found afterwards in radiometer and burner-temperature data. They appeared when residual heat in the burner re-ignited flowing fuel after the hot flame had gone out, a reignition path relevant to judging whether a fire is truly extinguished.",
+    "psi_url": "https://www.nasa.gov/mission_pages/station/research/news/Cool_Flames_First_for_ISS",
+    "publications": [
+      { "title": "Cool Flames Created During a First for International Space Station Research (NASA)", "year": 2021, "url": "https://www.nasa.gov/mission_pages/station/research/news/Cool_Flames_First_for_ISS" },
+      { "title": "Unusual Flames Discovered Aboard the International Space Station (UMD)", "year": 2021, "url": "https://fpe.umd.edu/news/story/unusual-flames-discovered-aboard-the-international-space-station" },
+      { "title": "Spherical cool diffusion flames burning gases in microgravity (NSF PAR)", "year": 2023, "url": "https://par.nsf.gov/servlets/purl/10426596" }
+    ]
+  },
+  {
+    "id": "slice",
+    "name": "Structure and Liftoff in Combustion Experiment (SLICE)",
+    "category": "gaseous",
+    "platform": "ISS",
+    "facility": "Microgravity Science Glovebox",
+    "years": "2012",
+    "objective": "Measure the shape, liftoff, stability and soot of laminar coflow methane jet flames in microgravity and normal gravity to test combustion models.",
+    "ai_summary": "SLICE burned nitrogen-diluted methane jet flames in an air coflow inside the ISS glovebox, from weak near-extinction flames to strongly sooting ones. Without buoyancy the flames were noticeably longer than their Earth counterparts, and soot shifted from the flame centerline toward its edges. These data mainly support model validation, with indirect relevance to smoke production and fire detection.",
+    "psi_url": "https://www1.grc.nasa.gov/space/iss-research/msg/slice/",
+    "publications": [
+      { "title": "A Computational and Experimental Study of Coflow Laminar Methane/Air Diffusion Flames: Effects of Fuel Dilution, Inlet Velocity, and Gravity", "year": 2015, "url": "https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/20150002322.pdf" },
+      { "title": "An experimental and computational study on soot formation in a coflow jet flame under microgravity and normal gravity", "year": 2014, "url": "https://ntrs.nasa.gov/api/citations/20140017780/downloads/20140017780.pdf" }
+    ]
+  }
+]

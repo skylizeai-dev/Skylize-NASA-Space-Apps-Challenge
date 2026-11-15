@@ -1,0 +1,26 @@
+[
+  {
+    "id": "iss-cabin",
+    "label": "ISS Cabin",
+    "description": "Current International Space Station cabin atmosphere.",
+    "oxygen_pct": 21,
+    "pressure_kpa": 101,
+    "flow_cm_s": 15
+  },
+  {
+    "id": "exploration-atmosphere",
+    "label": "Exploration Atmosphere",
+    "description": "Reduced-pressure, elevated-oxygen atmosphere proposed for future Moon/Mars habitats and EVA prebreathe reduction.",
+    "oxygen_pct": 34,
+    "pressure_kpa": 56.5,
+    "flow_cm_s": 15
+  },
+  {
+    "id": "custom",
+    "label": "Custom",
+    "description": "Set your own oxygen, pressure, and airflow.",
+    "oxygen_pct": 21,
+    "pressure_kpa": 101,
+    "flow_cm_s": 15
+  }
+]

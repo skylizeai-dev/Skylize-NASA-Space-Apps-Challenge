@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { useId, useMemo } from "react";
 import {
   CELL,
@@ -64,10 +63,10 @@ export default function Overview({
     <div className="flex flex-col gap-3">
       <section
         aria-label="Evidence readout"
-        className="grid grid-cols-1 gap-4 rounded-lg border border-line bg-surface p-4 lg:grid-cols-2"
+        className="grid grid-cols-1 gap-x-5 gap-y-3 rounded-lg border border-line bg-surface px-4 py-3 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]"
       >
         <div className="flex flex-col gap-2">
-          <h2 className="text-base font-semibold">How much evidence, side by side</h2>
+          <h2 className="text-sm font-semibold">How much evidence, side by side</h2>
           <div className="flex flex-1 flex-col gap-2 sm:flex-row">
             {readouts.map((readout) => (
               <ReadoutColumn
@@ -83,10 +82,10 @@ export default function Overview({
         {lead && (
           <div className="flex flex-col gap-2">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
-              <h2 className="text-base font-semibold">Highest-ranked finding</h2>
+              <h2 className="text-sm font-semibold">Highest-ranked finding</h2>
               <OutcomeChip outcome={lead.outcome} />
             </div>
-            <p className="line-clamp-4 text-sm">{lead.finding}</p>
+            <p className="line-clamp-3 text-sm">{lead.finding}</p>
             <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
               <a
                 href={investigations.get(lead.investigation_id)?.psi_url ?? lead.source_url}
@@ -125,7 +124,7 @@ export default function Overview({
         )}
       </section>
 
-      <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
         <Tile
           title="Coverage"
           question="Where are the tests, and where are the gaps?"
@@ -149,7 +148,7 @@ export default function Overview({
           action={`Open all ${ranked.length} ranked findings`}
           onOpen={() => onOpen("evidence")}
         >
-          <OutcomeSummary top={top} compact />
+          <OutcomeSummary top={top} compact headline={false} />
           <ol className="flex flex-col border-t border-line">
             {ranked.slice(0, 3).map((f, index) => (
               <li
@@ -186,7 +185,7 @@ export default function Overview({
             <p className="text-sm text-ink-2">Insufficient evidence for implications.</p>
           ) : (
             <>
-              <ul className="flex flex-col gap-2">
+              <ul className="flex flex-col gap-1.5">
                 {valid.slice(0, 2).map((item) => (
                   <li key={item.implication} className="line-clamp-2 text-sm font-semibold">
                     {item.implication}
@@ -201,19 +200,6 @@ export default function Overview({
         </Tile>
       </div>
 
-      <p className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-lg border border-line bg-surface px-4 py-2.5 text-xs text-ink-2">
-        <span>
-          {ranked.length} source-checked findings from {investigations.size} NASA investigations,
-          ranked by
-        </span>
-        <span className="num rounded border border-line bg-bg px-2 py-0.5 text-ink">
-          score = closeness × relevance × completeness
-        </span>
-        <span>No AI takes part in the ranking, the coverage verdict or the map.</span>
-        <Link href="/method" className="font-semibold text-accent hover:underline">
-          Open the method and sources
-        </Link>
-      </p>
     </div>
   );
 }
@@ -234,25 +220,29 @@ function ReadoutColumn({
       type="button"
       aria-pressed={active}
       onClick={onSelect}
-      className={`flex flex-1 flex-col items-start gap-1.5 rounded-md border p-3 text-left ${
+      className={`flex flex-1 flex-col items-start gap-1 rounded-md border px-3 py-2 text-left ${
         active ? "border-accent bg-accent/5" : "border-line bg-bg hover:bg-surface-2"
       }`}
     >
-      <span className={`text-sm font-semibold ${active ? "text-accent" : "text-ink"}`}>
-        {readout.label}
+      <span className="flex flex-wrap items-baseline gap-x-2">
+        <span className={`text-sm font-semibold ${active ? "text-accent" : "text-ink"}`}>
+          {readout.label}
+        </span>
+        <span className="tnum text-xs text-ink-2">
+          {fmtNum(atmosphere.oxygen_pct)} % O₂, {fmtNum(atmosphere.pressure_kpa)} kPa
+        </span>
       </span>
-      <span className="tnum text-xs text-ink-2">
-        {fmtNum(atmosphere.oxygen_pct)} % O₂, {fmtNum(atmosphere.pressure_kpa)} kPa
-      </span>
-      <StatusPill status={coverage.status} />
-      <span className="text-xs text-ink">
-        {coverage.conditions === 0
-          ? "No findings within close range"
-          : `${coverage.findings.length} ${
-              coverage.findings.length === 1 ? "finding" : "findings"
-            } from ${coverage.conditions} test ${
-              coverage.conditions === 1 ? "condition" : "conditions"
-            } within close range`}
+      <span className="flex items-center gap-2">
+        <StatusPill status={coverage.status} small />
+        <span className="text-xs text-ink">
+          {coverage.conditions === 0
+            ? "No findings in close range"
+            : `${coverage.findings.length} ${
+                coverage.findings.length === 1 ? "finding" : "findings"
+              }, ${coverage.conditions} test ${
+                coverage.conditions === 1 ? "condition" : "conditions"
+              }`}
+        </span>
       </span>
       {lead && (
         <span className="flex items-center gap-1.5 text-xs text-ink-2">
@@ -290,7 +280,7 @@ function Tile({
 }) {
   return (
     <article
-      className={`flex flex-col gap-3 rounded-lg border border-line bg-surface p-4 ${
+      className={`flex flex-col gap-2 rounded-lg border border-line bg-surface px-4 py-3 ${
         ai ? "border-l-2 border-l-ai" : ""
       }`}
     >
@@ -302,7 +292,7 @@ function Tile({
       <button
         type="button"
         onClick={onOpen}
-        className="mt-auto w-fit rounded-md border border-line bg-bg px-3 py-1.5 text-sm font-semibold hover:bg-surface-2"
+        className="mt-auto w-fit rounded-md border border-line bg-bg px-3 py-1 text-sm font-semibold hover:bg-surface-2"
       >
         {action}
       </button>
@@ -310,7 +300,7 @@ function Tile({
   );
 }
 
-const SIZE = 112;
+const SIZE = 92;
 const O = DOMAIN.oxygen_pct;
 const P = DOMAIN.pressure_kpa;
 const mx = (o: number) => ((o - O.min) / (O.max - O.min)) * SIZE;

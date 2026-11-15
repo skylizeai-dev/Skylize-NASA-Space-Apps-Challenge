@@ -9,10 +9,11 @@ export const STATUS_COPY: Record<CoverageStatus, { label: string; className: str
   untested: { label: "Untested", className: "hatch border-ink-2 text-ink" },
 };
 
-export function StatusPill({ status }: { status: CoverageStatus }) {
+export function StatusPill({ status, small = false }: { status: CoverageStatus; small?: boolean }) {
   const copy = STATUS_COPY[status];
+  const size = small ? "px-2 py-0.5 text-xs" : "px-3 py-1 text-sm";
   return (
-    <span className={`rounded-full border px-3 py-1 text-sm font-semibold ${copy.className}`}>
+    <span className={`shrink-0 rounded-full border font-semibold ${size} ${copy.className}`}>
       {copy.label}
     </span>
   );
@@ -39,16 +40,16 @@ export function CoverageVerdict({ atmosphere, coverage, nearest, onJump }: Verdi
   return (
     <section
       aria-label="Coverage verdict"
-      className="flex flex-col gap-3 rounded-lg border border-line bg-surface p-4"
+      className="flex flex-col gap-1.5 rounded-lg border border-line bg-surface px-4 py-3"
     >
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
         <StatusPill status={coverage.status} />
-        <p className="tnum text-sm text-ink-2">
+        <p className="text-base leading-snug font-semibold">{coverageHeadline(coverage)}</p>
+        <p className="tnum text-xs text-ink-2">
           {fmtNum(atmosphere.oxygen_pct)} % O₂, {fmtNum(atmosphere.pressure_kpa)} kPa,{" "}
           {fmtNum(atmosphere.flow_cm_s)} cm/s
         </p>
       </div>
-      <p className="text-xl leading-snug font-semibold">{coverageHeadline(coverage)}</p>
       {coverage.conditions === 0 ? (
         nearest && (
           <p className="text-sm text-ink-2">
@@ -96,14 +97,24 @@ export function outcomeHeadline(top: ScoredFinding[]): string {
 
 // What happened in the top-ranked tests. Disagreement stays visible: widths are
 // weighted by score and the raw counts sit beside them.
-export function OutcomeSummary({ top, compact = false }: { top: ScoredFinding[]; compact?: boolean }) {
+export function OutcomeSummary({
+  top,
+  compact = false,
+  headline = true,
+}: {
+  top: ScoredFinding[];
+  compact?: boolean;
+  headline?: boolean;
+}) {
   const { counts, totalWeight } = outcomeCounts(top);
   if (counts.length === 0) return null;
   return (
     <div className="flex flex-col gap-2">
-      <p className={compact ? "text-sm leading-snug font-semibold" : "text-sm"}>
-        {outcomeHeadline(top)}
-      </p>
+      {headline && (
+        <p className={compact ? "text-sm leading-snug font-semibold" : "text-sm"}>
+          {outcomeHeadline(top)}
+        </p>
+      )}
       <div
         className="flex h-3 w-full gap-px overflow-hidden rounded-sm"
         role="img"

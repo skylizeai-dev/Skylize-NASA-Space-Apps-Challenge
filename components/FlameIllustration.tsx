@@ -10,8 +10,8 @@ export default function FlameIllustration() {
     <figure className="flex shrink-0 flex-col items-center">
       <svg
         viewBox="0 0 168 84"
-        width="136"
-        height="68"
+        width="112"
+        height="56"
         role="img"
         aria-label="Illustration: a tall yellow teardrop flame on Earth beside a round blue flame in microgravity"
       >
@@ -43,7 +43,7 @@ export default function FlameIllustration() {
         </g>
         <rect x="124.5" y="48" width="3" height="32" rx="1" fill="var(--color-muted)" />
       </svg>
-      <figcaption className="flex w-[168px] flex-col text-center text-xs text-ink-2">
+      <figcaption className="flex w-[148px] flex-col text-center text-xs leading-tight text-ink-2">
         <span className="grid grid-cols-2">
           <span>Earth</span>
           <span>Microgravity</span>

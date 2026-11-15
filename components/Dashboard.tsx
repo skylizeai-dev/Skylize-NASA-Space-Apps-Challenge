@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { MotionConfig, motion } from "motion/react";
 import { CoverageVerdict, OutcomeSummary } from "./AnswerStrip";
@@ -189,8 +190,8 @@ export default function Dashboard() {
     <MotionConfig reducedMotion="user">
       <TopBar expert={view.expert} onExpert={(expert) => setView((v) => ({ ...v, expert }))} />
 
-      <main className="mx-auto grid w-full max-w-[1440px] flex-1 grid-cols-1 gap-6 px-4 py-4 md:grid-cols-[300px_minmax(0,1fr)] xl:grid-cols-[320px_minmax(0,1fr)]">
-        <div className="md:sticky md:top-[68px] md:self-start">
+      <main className="mx-auto grid w-full max-w-[1440px] flex-1 grid-cols-1 gap-4 px-4 pt-3 pb-4 md:grid-cols-[288px_minmax(0,1fr)] xl:grid-cols-[304px_minmax(0,1fr)]">
+        <div className="md:sticky md:top-[60px] md:self-start">
           <AtmosphereSelector
             presets={presets}
             view={view}
@@ -201,14 +202,14 @@ export default function Dashboard() {
         </div>
 
         <div className="flex min-w-0 flex-col gap-3">
-          <div className="flex flex-col-reverse items-start justify-between gap-x-8 gap-y-3 sm:flex-row">
-            <div className="flex max-w-[78ch] flex-col gap-2">
-              <h1 className="text-xl leading-snug font-semibold">
+          <div className="flex flex-col-reverse items-start justify-between gap-x-6 gap-y-2 sm:flex-row">
+            <div className="flex max-w-[84ch] flex-col gap-1">
+              <h1 className="text-lg leading-snug font-semibold">
                 Moon and Mars habitats are expected to run richer oxygen at lower pressure. How
                 much NASA fire evidence exists for that?
               </h1>
               {panel === "overview" && (
-                <p className="text-sm text-ink-2">
+                <p className="text-xs text-ink-2">
                   Pick an atmosphere. See NASA&apos;s microgravity combustion findings ranked by how
                   closely they were tested to it, each linked to its source. Evidence from{" "}
                   {SOURCE_NAMES.slice(0, -1).join(", ")} and {SOURCE_NAMES[SOURCE_NAMES.length - 1]}.
@@ -218,14 +219,15 @@ export default function Dashboard() {
             {panel === "overview" && <FlameIllustration />}
           </div>
 
-          <nav aria-label="Outputs" className="flex flex-wrap gap-1 border-b border-line">
+          <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-1 border-b border-line">
+          <nav aria-label="Outputs" className="flex flex-wrap gap-1">
             {PANELS.map((option) => (
               <button
                 key={option}
                 type="button"
                 aria-current={panel === option ? "page" : undefined}
                 onClick={() => open(option)}
-                className={`-mb-px border-b-2 px-3 py-2 text-sm font-semibold ${
+                className={`-mb-px border-b-2 px-3 py-1.5 text-sm font-semibold ${
                   panel === option
                     ? "border-accent text-accent"
                     : "border-transparent text-ink-2 hover:text-ink"
@@ -235,6 +237,18 @@ export default function Dashboard() {
               </button>
             ))}
           </nav>
+            <p
+              className="flex items-center gap-2 pb-2 text-xs text-ink-2"
+              title="No AI takes part in the ranking, the coverage verdict or the map."
+            >
+              <span className="num rounded border border-line bg-bg px-1.5 py-0.5 text-ink">
+                score = closeness × relevance × completeness
+              </span>
+              <Link href="/method" className="font-semibold text-accent hover:underline">
+                How it is ranked
+              </Link>
+            </p>
+          </div>
 
           {panel === "overview" && (
             <Overview
@@ -254,14 +268,14 @@ export default function Dashboard() {
           )}
 
           {panel === "coverage" && (
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-3">
               <CoverageVerdict
                 atmosphere={atmosphere}
                 coverage={coverage}
                 nearest={nearest}
                 onJump={jump}
               />
-              <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-[minmax(0,560px)_minmax(0,1fr)]">
+              <div className="grid grid-cols-1 items-start gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,320px)]">
                 <ConditionsChart
                   atmosphere={atmosphere}
                   findings={ranked}

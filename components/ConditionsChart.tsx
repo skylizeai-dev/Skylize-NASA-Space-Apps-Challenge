@@ -111,18 +111,22 @@ export default function ConditionsChart({ atmosphere, findings, cells, onSelect 
   return (
     <section
       aria-label="Tested conditions"
-      className="flex flex-col gap-3 rounded-lg border border-line bg-surface p-4"
+      className="flex flex-col gap-2 rounded-lg border border-line bg-surface px-4 py-3"
     >
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col">
         <h3 className="text-base font-semibold">Where the tests are</h3>
         <p className="text-xs text-ink-2">
-          Each mark is one finding at its tested oxygen and pressure. Hatching means little or
-          no evidence. Select a mark to open its card. Marks that would overlap are
-          spread sideways.
+          Each mark is one finding at its tested oxygen and pressure. Hatching means little or no
+          evidence. Select a mark to open its card.
         </p>
       </div>
 
-      <div className="relative">
+      <div className="flex flex-wrap items-start gap-x-5 gap-y-3">
+      {/* The plot scales with the window height so the whole view fits at 100 % zoom. */}
+      <div
+        className="relative min-w-[240px] flex-1"
+        style={{ maxWidth: "max(270px, calc((100dvh - 410px) * 1.125))" }}
+      >
         <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="group" aria-label="Oxygen against pressure, with every plottable finding and your atmosphere">
           <defs>
             <pattern id={`${uid}-hatch`} width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
@@ -261,7 +265,8 @@ export default function ConditionsChart({ atmosphere, findings, cells, onSelect 
         )}
       </div>
 
-      <ul className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-ink-2">
+      <div className="flex w-full flex-col gap-2 sm:w-52">
+      <ul className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-ink-2 sm:grid sm:grid-cols-2">
         {OUTCOMES.map((outcome) => (
           <li key={outcome} className="flex items-center gap-1.5">
             <OutcomeIcon outcome={outcome} size={10} />
@@ -269,9 +274,9 @@ export default function ConditionsChart({ atmosphere, findings, cells, onSelect 
           </li>
         ))}
       </ul>
-      <ul className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-ink-2">
+      <ul className="flex flex-wrap gap-x-3 gap-y-1 border-t border-line pt-2 text-xs text-ink-2 sm:flex-col">
         <li className="flex items-center gap-1.5">
-          <span className="h-3 w-3 rounded-full border-2 border-accent" /> Your atmosphere, with its
+          <span className="h-3 w-3 shrink-0 rounded-full border-2 border-accent" /> Your atmosphere, with its
           close range
         </li>
         <li className="flex items-center gap-1.5">
@@ -285,12 +290,14 @@ export default function ConditionsChart({ atmosphere, findings, cells, onSelect 
         </li>
       </ul>
       {unplotted > 0 && (
-        <p className="text-xs text-muted">
+        <p className="border-t border-line pt-2 text-xs text-muted">
           {unplotted} of {findings.length} findings do not report both oxygen and pressure, so they
           cannot be placed here. They still rank in the list. Ticks on the oxygen axis mark the{" "}
           {oxygenOnly.length} that report oxygen only.
         </p>
       )}
+      </div>
+      </div>
     </section>
   );
 }

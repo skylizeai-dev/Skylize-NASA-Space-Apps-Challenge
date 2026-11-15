@@ -54,7 +54,8 @@ publishing. In the running app:
 
 - Next.js (App Router) + TypeScript + Tailwind CSS, deployed on Vercel
 - Hand-written SVG for the oxygen/pressure chart (no chart library)
-- `motion` for the re-rank animation, `geist` for the typefaces
+- `motion` for the re-rank animation, `geist` for the typefaces, `three` for
+  the 3D cabin view
 - Static JSON in `/data`, imported at build time. No database
 - One route handler, `/api/ask`, calling an LLM (key via `LLM_API_KEY` env var).
   The question box is shown only when `NEXT_PUBLIC_ASK_ENABLED=1`
@@ -95,8 +96,9 @@ exists near it while you answer. "Show the evidence" opens the results. Shared
 links that already carry an atmosphere (`?o2=...`) skip the setup, and
 "Build a new environment step by step" reopens it.
 
-The picture in the side panel (`components/CabinScene.tsx`) is the slot for
-the 3D ISS cabin model; see `docs/CABIN_3D_CONTRACT.md`.
+The side panel shows a 3D cabin module (three.js, loaded only on the setup
+screen, with a 2D fallback without WebGL). Drag to turn it; select a part to
+open the step that edits it. See `docs/CABIN_3D_CONTRACT.md`.
 
 ## Overview and detail views
 

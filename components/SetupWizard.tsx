@@ -313,7 +313,12 @@ export default function SetupWizard({
           <h2 className="text-sm font-semibold">Your environment</h2>
           {/* Scene box: scales with the window height so the step fits at 100 % zoom. */}
           <div style={{ height: "clamp(150px, calc(100dvh - 450px), 300px)" }}>
-            <CabinScene atmosphere={atmosphere} material={material} step={step.id} />
+            <CabinScene
+              atmosphere={atmosphere}
+              material={material}
+              step={step.id}
+              onPick={(target) => go(STEPS.findIndex((s) => s.id === target))}
+            />
           </div>
           <dl className="tnum grid grid-cols-4 gap-2 text-center">
             <Readout label="Oxygen" value={`${fmtNum(atmosphere.oxygen_pct)} %`} active={step.id === "oxygen"} />
@@ -446,16 +451,21 @@ function BigSlider({
               key={mark.label}
               type="button"
               onClick={() => onChange(mark.value)}
-              className="absolute top-6 -translate-x-1/2 text-xs whitespace-nowrap text-ink-2 hover:text-accent"
+              className={`absolute top-6 text-xs whitespace-nowrap text-ink-2 hover:text-accent ${
+                mark.value <= range.min ? "" : mark.value >= range.max ? "-translate-x-full" : "-translate-x-1/2"
+              }`}
               style={{ left: at(mark.value) }}
               title={`Set to ${fmtNum(mark.value)} ${unit}`}
             >
-              <span aria-hidden="true" className="mx-auto mb-0.5 block h-1.5 w-px bg-ink-2" />
+              <span
+                aria-hidden="true"
+                className={`mb-0.5 block h-1.5 w-px bg-ink-2 ${mark.value <= range.min ? "" : "mx-auto"}`}
+              />
               {mark.label} {fmtNum(mark.value)}
             </button>
           ))}
         <div className="num mt-1 flex justify-between text-xs text-muted">
-          <span>{range.min}</span>
+          <span className={marks.some((m) => m && m.value <= range.min) ? "invisible" : ""}>{range.min}</span>
           <span>{range.max}</span>
         </div>
       </div>

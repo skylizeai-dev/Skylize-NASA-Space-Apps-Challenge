@@ -1,26 +1,202 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
+/* Design tokens: FireSight UI/UX blueprint, section 3. Dark only. */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --color-bg: #0b0f17;
+  --color-surface: #121826;
+  --color-surface-2: #1a2233;
+  --color-line: #263042;
+  --color-ink: #e6eaf2;
+  --color-ink-2: #9aa4b8;
+  --color-muted: #7c8699;
+  --color-accent: #4cc9f0;
+  --color-action: #ff8a3d;
+  --color-ai: #b69cff;
+  --color-spread: #ff6b5b;
+  --color-steady: #ffb547;
+  --color-extinguished: #5dd39e;
+  --color-noignition: #a3b1c6;
+  --color-cool: #b69cff;
+  --color-ramp-1: #1b3a4b;
+  --color-ramp-2: #2a6f8f;
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, Menlo, Consolas, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  color-scheme: dark;
+  background: var(--color-bg);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+/* Mixed text and numbers: aligned digits without the mono face. */
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Absence is drawn as a pattern, never a colour (blueprint 3.2). */
+.hatch {
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--color-line) 0 2px,
+    transparent 2px 8px
+  );
+  background-color: var(--color-surface-2);
+}
+.hatch-light {
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--color-line) 0 1px,
+    transparent 1px 12px
+  );
+  background-color: var(--color-surface-2);
+}
+
+/* Range sliders */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 20px;
+  background: transparent;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--color-line);
+}
+input[type="range"]::-moz-range-track {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--color-line);
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  margin-top: -6px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  border: 3px solid var(--color-bg);
+  box-shadow: 0 0 0 1px var(--color-accent);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  border: 3px solid var(--color-bg);
+  box-shadow: 0 0 0 1px var(--color-accent);
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Glossary terms: dotted underline, definition on hover or keyboard focus. */
+.term {
+  position: relative;
+  text-decoration: underline dotted var(--color-muted);
+  text-underline-offset: 3px;
+  cursor: help;
+}
+.term::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 6px);
+  z-index: 30;
+  width: max-content;
+  max-width: min(260px, 70vw);
+  padding: 8px 10px;
+  border: 1px solid var(--color-line);
+  border-radius: 6px;
+  background: var(--color-surface-2);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.4;
+  white-space: normal;
+  pointer-events: none;
+  display: none;
+}
+.term:hover::after,
+.term:focus-visible::after {
+  display: block;
+}
+
+/* Verify drawer: a native dialog docked to the right edge. */
+dialog.drawer {
+  margin: 0 0 0 auto;
+  height: 100dvh;
+  max-height: 100dvh;
+  width: min(440px, 100vw);
+  max-width: 100vw;
+  border: 0;
+  border-left: 1px solid var(--color-line);
+  background: var(--color-surface-2);
+  color: var(--color-ink);
+  padding: 0;
+}
+dialog.drawer::backdrop {
+  background: rgb(11 15 23 / 0.7);
+}
+dialog.drawer[open] {
+  animation: drawer-in 180ms ease-out;
+}
+@keyframes drawer-in {
+  from {
+    transform: translateX(24px);
+    opacity: 0;
+  }
+}
+
+.card-flash {
+  animation: card-flash 1.6s ease-out;
+}
+@keyframes card-flash {
+  0%,
+  40% {
+    box-shadow: 0 0 0 2px var(--color-accent);
+  }
+  100% {
+    box-shadow: 0 0 0 2px transparent;
+  }
+}
+
+.skeleton {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  dialog.drawer[open],
+  .card-flash {
+    animation: none;
+  }
 }

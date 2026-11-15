@@ -1,0 +1,46 @@
+{
+  "iss-cabin": [
+    {
+      "implication": "Fabric burns readily in cabin-like air in microgravity.",
+      "evidence": "Saffire IV burned a 50 cm fabric sample for 130 s at 22.0 % O2, 100 kPa and 20 cm/s concurrent flow, with an average heat release of 3,150 W.",
+      "ids": ["saffire-002"]
+    },
+    {
+      "implication": "Lowering airflow can put out a thin-fuel flame near these conditions. This suggests ventilation control matters, but one record is weak evidence.",
+      "evidence": "A thin fabric flame ignited at 5 cm/s went out when the flow was reduced to 2.2 cm/s at 18.7 % O2 and 1 atm.",
+      "ids": ["bass-ii-003"]
+    },
+    {
+      "implication": "A material can burn in microgravity below the oxygen level that limits it on Earth.",
+      "evidence": "Flame spread over a 9.5 mm PMMA rod at 17.8 % O2 and 100 kPa, below the roughly 18 % normal-gravity flammability limit.",
+      "ids": ["sofie-mist-003"]
+    },
+    {
+      "implication": "Most of the remaining close evidence was collected in oxygen-enriched, lower-pressure atmospheres, not in cabin air.",
+      "evidence": "Four Saffire burns at 26.2 to 31.0 % O2 and 54.1 to 70.7 kPa all spread.",
+      "ids": ["saffire-003", "saffire-005", "saffire-006", "saffire-007"]
+    }
+  ],
+  "exploration-atmosphere": [
+    {
+      "implication": "No flight test in this dataset matches 34 % O2 at 56.5 kPa. In the closest tests, every sample burned and the flame spread.",
+      "evidence": "Saffire VI burned fabric and PMMA at 28.8 to 31.0 % O2 and 54.1 to 55.2 kPa with 20 cm/s concurrent flow.",
+      "ids": ["saffire-005", "saffire-006", "saffire-007"]
+    },
+    {
+      "implication": "Combustion gases reached crew limits in a small spacecraft. This suggests toxic gas is a hazard well away from the flame.",
+      "evidence": "PMMA fires pushed cabin CO above the 24-hour crew limit and CO2 above the 1-hour limit in a 16.7 m³ spacecraft.",
+      "ids": ["saffire-009"]
+    },
+    {
+      "implication": "Smoke detection can come late, after most of the hazardous gas is already released. One record is weak evidence.",
+      "evidence": "Smoke was readily detected only at 981 s, and temperature rose significantly only very near the fire.",
+      "ids": ["saffire-010"]
+    },
+    {
+      "implication": "Thick plastic can keep burning for many minutes under these conditions.",
+      "evidence": "A 1 cm PMMA slab burned for 780 s and a 0.5 cm one-sided slab for 1,200 s.",
+      "ids": ["saffire-006", "saffire-007"]
+    }
+  ]
+}

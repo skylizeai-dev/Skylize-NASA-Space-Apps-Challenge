@@ -1,9 +1,9 @@
-# FlameSight
+# FireSight
 
 NASA Space Apps Challenge 2026 — **Flame in Freefall: SI-Powered Fire Safety Insights from Microgravity Combustion Data**
 Team: Skylize
 
-FlameSight turns NASA's microgravity combustion experiments into ranked, cited
+FireSight turns NASA's microgravity combustion experiments into ranked, cited
 fire-safety evidence for any spacecraft or habitat atmosphere. Pick an
 atmosphere (oxygen %, pressure, airflow) and see which NASA findings are most
 relevant, with every claim linked back to its source record.
@@ -17,8 +17,10 @@ relevant, with every claim linked back to its source record.
    black box.
 3. Each result is an evidence card: what burned, under what conditions, what
    happened, and a direct link to the NASA PSI record.
-4. A data-gaps grid shows which oxygen/pressure combinations have little or no
-   public NASA evidence.
+4. A chart and a data-gaps panel show which oxygen/pressure combinations have
+   little or no evidence in this dataset.
+5. Safety implications for the two preset atmospheres are AI-written in advance
+   (`data/implications.json`), cite finding ids, and are labeled in the UI.
 
 ## NASA data
 
@@ -51,19 +53,34 @@ publishing. In the running app:
 ## Stack
 
 - Next.js (App Router) + TypeScript + Tailwind CSS, deployed on Vercel
-- Recharts for the oxygen/pressure scatter chart
-- Static JSON in `/data`, imported at build time — no database
-- One route handler, `/api/ask`, calling an LLM (key via `LLM_API_KEY` env var)
+- Hand-written SVG for the oxygen/pressure chart (no chart library)
+- `motion` for the re-rank animation, `geist` for the typefaces
+- Static JSON in `/data`, imported at build time. No database
+- One route handler, `/api/ask`, calling an LLM (key via `LLM_API_KEY` env var).
+  The question box is shown only when `NEXT_PUBLIC_ASK_ENABLED=1`
 
 ```
 /app
-  page.tsx            dashboard
-  method/page.tsx     how ranking and AI work, and the tool's limits
+  page.tsx            dashboard (Suspense + skeleton)
+  method/page.tsx     ranking formula, worked example, coverage rule, data list, limits
   api/ask/route.ts    Q&A endpoint
-/components           AtmosphereSelector, EvidenceCard, ConditionsChart, GapsGrid, AskBox
-/data                 investigations.json, findings.json, presets.json
-/lib                  rank.ts, gaps.ts, schema.ts
+/components           Dashboard, TopBar, AtmosphereSelector, AnswerStrip, Implications,
+                      EvidenceCard, EvidenceTable, VerifyDrawer, ConditionsChart,
+                      GapsPanel, AskBox
+/data                 investigations.json, findings.json, presets.json, implications.json
+/lib                  rank.ts, coverage.ts, url.ts, format.ts, schema.ts
 ```
+
+## Coverage rule
+
+A point on the oxygen x pressure plane is **tested** when 3 or more distinct
+test conditions lie within +/-5 % O2 and +/-15 kPa of it, **thin** with 1 or 2,
+**untested** with none. Findings from the same burn share one condition. The
+same rule drives the verdict, the chart hatching and the gaps panel
+(`lib/coverage.ts`).
+
+The view state (atmosphere, mode, filters) lives in the URL, e.g.
+`?o2=34&p=56.5&flow=15`, so any view can be shared.
 
 ## Running locally
 

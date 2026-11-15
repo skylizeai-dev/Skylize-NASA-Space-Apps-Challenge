@@ -89,16 +89,21 @@ same rule drives the verdict, the chart hatching and the gaps panel
 
 ## Step-by-step setup
 
-A first visit opens a setup that builds the environment to test, one card per
-question, in order: habitat, oxygen, pressure, airflow, material, review.
-Values apply live, so a side panel shows the environment and how much evidence
-exists near it while you answer. "Show the evidence" opens the results. Shared
-links that already carry an atmosphere (`?o2=...`) skip the setup, and
-"Build a new environment step by step" reopens it.
+A first visit opens a setup that builds the environment to test, in order:
+habitat, oxygen, pressure, airflow, material, review.
 
-The side panel shows a 3D cabin module (three.js, loaded only on the setup
-screen, with a 2D fallback without WebGL). Drag to turn it; select a part to
-open the step that edits it. See `docs/CABIN_3D_CONTRACT.md`.
+1. **Habitat choice, full screen.** Two cards, ISS cabin and exploration
+   habitat, each with its values and how much evidence exists for it.
+2. **The 3D environment.** After a choice, the habitat opens in 3D as the main
+   stage (a cut-open cabin module, or a surface base under a glass dome), with
+   one question at a time in a panel beside it. Values apply live. Drag to look
+   around, zoom the habitat, and select the sample, the airflow or the air to
+   jump to its question.
+
+"Show the evidence" opens the results. Shared links that already carry an
+atmosphere (`?o2=...`) skip the setup, and "Build a new environment step by
+step" reopens it. three.js loads only after a habitat is chosen, with a 2D
+drawing as fallback without WebGL. See `docs/CABIN_3D_CONTRACT.md`.
 
 ## Overview and detail views
 

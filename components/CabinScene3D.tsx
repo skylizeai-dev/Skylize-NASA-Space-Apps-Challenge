@@ -43,7 +43,7 @@ import {
   type Texture,
 } from "three";
 import { useState } from "react";
-import type { CabinSceneProps, SetupStep } from "./CabinScene";
+import { describeScene, type CabinSceneProps, type SetupStep } from "./CabinScene";
 
 // 3D picture of the environment the setup is building: a generic pressurised
 // module, cut open, with a burning sample at the centre.
@@ -157,7 +157,9 @@ export default function CabinScene3D({ atmosphere, material, step, onPick, onRea
       className="absolute inset-0 overflow-hidden rounded-md"
       tabIndex={0}
       onKeyDown={onKeyDown}
-      aria-label="3D cabin view. Drag or use the arrow keys to turn it; Home resets the view."
+      role="group"
+      aria-roledescription="3D illustration"
+      aria-label={`${describeScene(atmosphere, material)} Drag or use the arrow keys to turn it; Home resets the view.`}
     >
       <div ref={hostRef} className="absolute inset-0" />
       {flow_cm_s === 0 && (
@@ -528,7 +530,8 @@ function createCabin(host: HTMLDivElement, callbacks: SceneCallbacks): SceneApi 
     raycaster.setFromCamera(ndc, camera);
     for (const p of pickables) {
       if (!p.enabled()) continue;
-      if (raycaster.intersectObject(p.obj, true).length > 0) return p.part;
+      // The habitat is chosen on its own full-screen step, so the hull is not a target.
+      if (raycaster.intersectObject(p.obj, true).length > 0) return p.part === "habitat" ? null : p.part;
     }
     return null;
   };

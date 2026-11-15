@@ -1,17 +1,18 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { fmtNum, type FuelGroup } from "@/lib/format";
 import type { Atmosphere } from "@/lib/schema";
 
-// The setup's picture of the environment being built.
-//
-// A 3D cabin module (CabinScene3D, three.js) replaces the 2D drawing once it
-// has loaded. The 2D drawing stays as the placeholder while the 3D chunk loads
-// and as the fallback when WebGL is unavailable (see docs/CABIN_3D_CONTRACT.md).
-// Both fill the parent box; the setup sets that box's size.
+// The setup's picture of the environment being built. Two 3D environments:
+//   "cabin"   – a pressurised module, cut open (CabinScene3D)
+//   "habitat" – a surface base under a glass dome (HabitatScene3D)
+// Both are three.js, loaded on demand, and share the contract in
+// docs/CABIN_3D_CONTRACT.md. A 2D drawing stands in while the cabin loads and
+// whenever WebGL is unavailable. The scene fills its parent box.
 export type SetupStep = "habitat" | "oxygen" | "pressure" | "airflow" | "material" | "review";
+export type Environment = "cabin" | "habitat";
 
 export interface CabinSceneProps {
   atmosphere: Atmosphere;
@@ -22,8 +23,17 @@ export interface CabinSceneProps {
   onPick?: (step: SetupStep) => void;
 }
 
-// Client only, in its own chunk: three.js never reaches the server or the first paint.
+function SceneLoading() {
+  return (
+    <p className="flex h-full items-center justify-center text-sm text-ink-2" role="status">
+      Loading the 3D habitat…
+    </p>
+  );
+}
+
+// Client only, each in its own chunk: three.js never reaches the server or the first paint.
 const CabinScene3D = dynamic(() => import("./CabinScene3D"), { ssr: false });
+const HabitatScene3D = dynamic(() => import("./HabitatScene3D"), { ssr: false, loading: SceneLoading });
 
 let webglSupport: boolean | undefined;
 function hasWebGL(): boolean {
@@ -60,92 +70,39 @@ export function describeScene(atmosphere: Atmosphere, material: FuelGroup | "any
   );
 }
 
-export default function CabinScene(props: CabinSceneProps) {
-  const [enlarged, setEnlarged] = useState(false);
-  const dialogRef = useRef<HTMLDialogElement>(null);
-
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-    if (enlarged && !dialog.open) dialog.showModal();
-    if (!enlarged && dialog.open) dialog.close();
-  }, [enlarged]);
-
-  return (
-    <>
-      <SceneFigure
-        {...props}
-        action={
-          <button
-            type="button"
-            onClick={() => setEnlarged(true)}
-            className="rounded border border-line bg-bg px-1.5 py-0.5 text-xs text-ink-2 hover:text-ink"
-          >
-            Enlarge
-          </button>
-        }
-      />
-      <dialog
-        ref={dialogRef}
-        className="scene-dialog"
-        aria-label="Cabin view, enlarged"
-        onClose={() => setEnlarged(false)}
-        onClick={(e) => {
-          if (e.target === dialogRef.current) setEnlarged(false);
-        }}
-      >
-        {enlarged && (
-          <div className="flex h-full flex-col gap-2 p-4">
-            <div className="flex items-center justify-between gap-3">
-              <h2 className="text-base font-semibold">Your environment</h2>
-              <button
-                type="button"
-                onClick={() => setEnlarged(false)}
-                className="rounded border border-line px-2.5 py-1 text-sm text-ink-2 hover:text-ink"
-              >
-                Close
-              </button>
-            </div>
-            <div className="min-h-0 flex-1">
-              <SceneFigure
-                {...props}
-                onPick={
-                  props.onPick &&
-                  ((step) => {
-                    setEnlarged(false);
-                    props.onPick?.(step);
-                  })
-                }
-              />
-            </div>
-          </div>
-        )}
-      </dialog>
-    </>
-  );
-}
-
-function SceneFigure({ action, ...props }: CabinSceneProps & { action?: React.ReactNode }) {
+export default function CabinScene({
+  environment = "cabin",
+  ...props
+}: CabinSceneProps & { environment?: Environment }) {
   const webgl = useSyncExternalStore(noSubscription, hasWebGL, () => false);
   const [status, setStatus] = useState<"loading" | "ready" | "failed">("loading");
-  const show3D = webgl && status !== "failed";
-  const live = show3D && status === "ready";
+
+  if (!webgl || status === "failed") {
+    return (
+      <figure className="flex h-full flex-col gap-1">
+        <div className="relative min-h-0 flex-1">
+          <CabinScene2D {...props} />
+        </div>
+        <figcaption className="text-xs text-muted">
+          Illustration, not a simulation. The 3D view needs WebGL, which this browser has not
+          provided, so a drawing is shown instead.
+        </figcaption>
+      </figure>
+    );
+  }
+
+  if (environment === "habitat") {
+    // The habitat scene carries its own caption and controls.
+    return <HabitatScene3D {...props} wheelZoom onError={() => setStatus("failed")} />;
+  }
 
   return (
     <figure className="flex h-full flex-col gap-1">
-      <div role="img" aria-label={describeScene(props.atmosphere, props.material)} className="relative min-h-0 flex-1">
-        {!live && <CabinScene2D {...props} />}
-        {show3D && (
-          <CabinScene3D {...props} onReady={() => setStatus("ready")} onFail={() => setStatus("failed")} />
-        )}
+      <div className="relative min-h-0 flex-1">
+        {status !== "ready" && <CabinScene2D {...props} />}
+        <CabinScene3D {...props} onReady={() => setStatus("ready")} onFail={() => setStatus("failed")} />
       </div>
-      <figcaption className="flex flex-wrap items-center justify-between gap-x-3 text-xs text-muted">
-        <span>
-          Illustration, not a simulation.
-          {live && props.onPick && " Drag to turn. Select a part to change it."}
-        </span>
-        {action}
-      </figcaption>
+      <figcaption className="px-1 text-xs text-muted">Illustration, not a simulation.</figcaption>
     </figure>
   );
 }
@@ -163,7 +120,12 @@ function CabinScene2D({ atmosphere, material, step }: CabinSceneProps) {
   const highlightAir = step === "oxygen" || step === "pressure";
 
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="absolute inset-0 h-full w-full" aria-hidden="true">
+    <svg
+      viewBox={`0 0 ${W} ${H}`}
+      className="absolute inset-0 h-full w-full"
+      role="img"
+      aria-label={describeScene(atmosphere, material)}
+    >
       <defs>
         <radialGradient id="cabin-flame" cx="50%" cy="50%" r="50%">
           <stop offset="0%" stopColor="var(--flame-micro-inner)" stopOpacity="0.25" />

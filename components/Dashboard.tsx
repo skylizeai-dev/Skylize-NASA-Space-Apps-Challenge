@@ -232,7 +232,7 @@ export default function Dashboard() {
       />
 
       {panel === "setup" ? (
-        <main className="mx-auto w-full max-w-[1280px] flex-1 px-4 pt-3 pb-4">
+        <main className="mx-auto w-full max-w-[1800px] flex-1 px-4 pt-3 pb-4">
           <SetupWizard
             presets={presets}
             atmosphere={atmosphere}
